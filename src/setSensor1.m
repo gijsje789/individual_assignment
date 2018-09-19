@@ -19,7 +19,7 @@ function success = setSensor1(type, varargin)
             warning('Maximum output of sensor 1 is not within 0 ... 3.3 V.')
         elseif aVal == 0
             warning('Rico of sensor 1 is 0.')
-        elseif bVal <= 0 || bVal > 3.3
+        elseif bVal < 0 || bVal > 3.3
             warning('B value of sensor 1 is not within 0 ... 3.3 V.')
         else % Values are okay.
             S1 = {type,
