@@ -8,6 +8,7 @@ function success = setSensor(type, sensorNumber, varargin)
 % Returns:
 %   success True when the sensor information is correct. False when one of
 %   the inputs is wrong.
+warning on backtrace
 persistent Sensors
     success = false;
     if sensorNumber > 0 && sensorNumber <= 2
