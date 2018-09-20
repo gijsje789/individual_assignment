@@ -1,12 +1,14 @@
 function success = setSensor(type, sensorNumber, varargin)
-%setSensor1 Saves the information about sensor 1 to the base workspace.
-%   type The type of sensor, either 'Analogue' or 'Digital'.
-%   varargin Expected 3 inputs for analogue sensors: maximum output, a, b
+%setSensor1 Saves the information about the sensors to the base workspace.
+%
+%   INPUTS:
+%   type        The type of sensor, either 'Analogue' or 'Digital'.
+%   varargin    Expected 3 inputs for analogue sensors: maximum output, a, b
 %            (a*x + b)
 %            Expected 1 input for digital sensors: number of pulses per
 %            unit.
-% Returns:
-%   success True when the sensor information is correct. False when one of
+% RETURNS:
+%   success     True when the sensor information is correct. False when one of
 %   the inputs is wrong.
 warning on backtrace
 persistent Sensors

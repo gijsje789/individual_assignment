@@ -1,6 +1,15 @@
 function success = openSerialChannel()
-%UNTITLED5 Summary of this function goes here
-%   Detailed explanation goes here
+% openSerialChannel() opens the serial channel to which the arduino is
+% connected in the base workspace.
+%   In order to save the incoming data, the base workspace is used for the
+%   serial communication and thus requires the 'evalin' function.
+%   The main reason is that the GUI and seperate functions all have their
+%   own workspace that are not accessable between functions/GUI. Luckily,
+%   all functions can, with a small workaround, access the base workspace.
+%
+% RETURNS:
+%   success     Returns true when the serial channel has been opened
+%   successfully. Otherwise, false.
     warning on backtrace
     success = true;
     evalin('base', 'arduinoSerial = serial(serialPort)');
