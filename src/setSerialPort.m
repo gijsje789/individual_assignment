@@ -4,9 +4,9 @@ function success = setSerialPort(port)
     warning on backtrace
     success = true;
     if contains(port, 'COM')
-        [num, status] = num2str(erase(port,'COM'));
+        [num, status] = str2num(erase(port,'COM'));
         if status
-            serialPort = port;
+            assignin('base', 'serialPort', port);
         else
             warning('COM port might not be correct.');
             success = false;
