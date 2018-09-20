@@ -4,7 +4,7 @@ function success = openSerialChannel()
     warning on backtrace
     success = true;
     evalin('base', 'arduinoSerial = serial(serialPort)');
-    status = evalin('base', 'arduinoSerial.Status');
+    status = evalin('base', 'arduinoSerial.Status')
     if strcmp(status, 'closed')
         evalin('base', 'fopen(arduinoSerial)')
         status = evalin('base', 'arduinoSerial.Status');
@@ -13,8 +13,9 @@ function success = openSerialChannel()
             success = false;
         elseif strcmp(status, 'open')
             'Opened arduino COM port.'
-            evalin('base', 's.BytesAvailableFcnMode = ''terminator'' ');
-            evalin('base', 's.BytesAvailableFcn = @readSerialInformation');
+            evalin('base', 'arduinoSerial.BytesAvailableFcnMode = ''terminator'' ');
+            evalin('base', 'arduinoSerial.BytesAvailableFcn = @(~,~)readSerialInformation');
+            evalin('base', 'arduinoSerial.BaudRate = 9600');
         else
             warning('Unknown error whilst opening COM port.');
             success = false;
