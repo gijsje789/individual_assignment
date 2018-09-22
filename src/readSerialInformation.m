@@ -6,6 +6,7 @@ function out = readSerialInformation()
 % RETURNS:
 % out   The character string that is received via the serial communication.
     warning on backtrace
-    out = evalin('base', 'fscanf(arduinoSerial)')
+    string = evalin('base', 'fscanf(arduinoSerial)');
+    splitted = strsplit(string, ',')
 end
 
