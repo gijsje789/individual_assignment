@@ -52,12 +52,14 @@ end
         if row <= 100
             xdata = data(1:row,2); % row for plotting.
             ydata = data(1:row,3:5); % S1 & S2 value
-            
+            plot(app.S1Graph, xdata, ydata);
         elseif row > 100
             xdata = data(row-100:row,2); % row for plotting
             ydata = data(row-100:row,3:5); % S1 & S2 value
+            set(app.S1Graph.Children(1), 'XData', xdata, 'YData', ydata(:,1));
+            set(app.S1Graph.Children(2), 'XData', xdata, 'YData', ydata(:,2));
+            set(app.S1Graph.Children(3), 'XData', xdata, 'YData', ydata(:,3));
         end
-        plot(app.S1Graph, xdata, ydata);
         app.S1Graph.XLim = [min(xdata), max(xdata)+40];
     end
 
