@@ -1,4 +1,4 @@
-function success = setSensor(type, sensorNumber, varargin)
+function success = setAnalogueSensor(sensorNumber, output, aVal, bVal)
 %setSensor1 Saves the information about the sensors to the base workspace.
 %
 %   INPUTS:
@@ -49,6 +49,5 @@ persistent Sensors
             warning('No correct input given');
         end
     end
-
 end
 
