@@ -50,12 +50,12 @@ end
     
     if row <= 100 && row >= 10
         xdata = data(1:row,2); % row for plotting.
-        ydata = data(1:row,3:4); % S1 & S2 value
+        ydata = data(1:row,3:5); % S1 & S2 value
         plot(app.S1Graph, xdata, ydata);
         app.S1Graph.XLim = [min(xdata), max(xdata)+40];
     elseif row > 100
         xdata = data(row-100:row,2); % row for plotting
-        ydata = data(row-100:row,3:4); % S1 & S2 value
+        ydata = data(row-100:row,3:5); % S1 & S2 value
         plot(app.S1Graph, xdata, ydata);
         app.S1Graph.XLim = [min(xdata), max(xdata)+40];
     end
