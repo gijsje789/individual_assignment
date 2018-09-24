@@ -3,9 +3,12 @@ function success = setAnalogueSensor(sensorNumber, output, aVal, bVal)
 %
 %   INPUTS:
 %   type        The type of sensor, either 'Analogue' or 'Digital'.
-%   output      The maximum output voltage of the sensor.
-%   aVal        The a value in a*x+b.
-%   bVal        The b value in a*x+b.
+%   output      The maximum output voltage of the sensor. Set output to -1
+%   to disable the sensor. 
+%   aVal        The a value in a*x+b. When sensor is disabled, can be any
+%   value.
+%   bVal        The b value in a*x+b. When sensor is disabled, can be any
+%   value.
 %
 % RETURNS:
 %   success     True when the sensor information is correct. False when one of
@@ -13,7 +16,13 @@ function success = setAnalogueSensor(sensorNumber, output, aVal, bVal)
 warning on backtrace
 persistent Sensors
     success = false;
-    if output <= 0 || output > 3.3
+    if output == -1
+        Sensors{sensorNumber}.OutputVoltage = -1;
+        Sensors{sensorNumber}.a = 0;
+        Sensors{sensorNumber}.b = 0;
+        success = true;
+        assignin('base', 'Sensors', Sensors);
+    elseif output <= 0 || output > 3.3
         warning('Maximum output of sensor %d is not within 0 ... 3.3 V.', sensorNumber)
     elseif aVal == 0
         warning('Rico of sensor %d is 0.', sensorNumber)
