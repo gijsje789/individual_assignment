@@ -20,10 +20,10 @@ void loop()
   int S2Value = analogRead(A1);
   
   // Send the sensor values through the serial connection.
-  string = "S1," + String(S1Value) + ",S2," + String(S2Value) + ",S3," + String(countedPulses) + ","; 
+  string = "S1," + String(S1Value) + ",S2," + String(S2Value) + ",S3," + String(countedPulses) + ",\r\n"; 
   // Last comma is needed to seperate the /r/n from last sensor value.
   
-  Serial.println(string);
+  Serial.print(string);
   delay(1);        // delay in between reads for stability
 }
 

@@ -1,5 +1,5 @@
-function out = readSerialInformation()
-%readSerialInformation() reads the base workspace 'arduinoSerial' channel
+function getSerialMessage(hObject, eventdata)
+%getSerialMessage() reads the base workspace 'arduinoSerial' channel
 %to receive serial communication from the arduino. Will need to be able to
 %read more than just one sensor.
 %
@@ -14,13 +14,14 @@ if isempty(app)
     app.S1Graph.XLimMode = 'manual';
     app.S1Graph.YLimMode = 'manual';
     app.S1Graph.YLim = [0, 4150];
+end
 if isempty(row)
     row = 0;
 end
 
     warning on backtrace
     string = evalin('base', 'fscanf(arduinoSerial)');
-    splitted = strsplit(string, ',');
+    splitted = strsplit(string, ',')
     placeIn = -1;
     row = row + 1;
     data(row,1) = now; % timestamp the first cell.
@@ -47,12 +48,16 @@ end
         end
     end
     
-    if row <= 100
+    if row <= 100 && row >= 10
         xdata = data(1:row,2); % row for plotting.
         ydata = data(1:row,3:4); % S1 & S2 value
-    else
+        plot(app.S1Graph, xdata, ydata);
+        app.S1Graph.XLim = [min(xdata), max(xdata)+40];
+    elseif row > 100
         xdata = data(row-100:row,2); % row for plotting
-        ydata = data(row-100:row,3:4); % S1 & S2 value 
+        ydata = data(row-100:row,3:4); % S1 & S2 value
+        plot(app.S1Graph, xdata, ydata);
+        app.S1Graph.XLim = [min(xdata), max(xdata)+40];
     end
 
 
@@ -60,9 +65,6 @@ end
 %     shown. Tried animatedLine but that is really slow.
 %     set(app.S1Graph.Children, 'XData', xdata, 'YData', ydata);
 %     drawnow
-
-    plot(app.S1Graph, xdata, ydata);
-    app.S1Graph.XLim = [min(xdata), max(xdata)+40];
        
     assignin('base', 'sensorData', data);
 end
