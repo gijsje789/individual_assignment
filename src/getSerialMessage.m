@@ -5,6 +5,7 @@ function getSerialMessage(hObject, eventdata)
 %
 % RETURNS:
 % out   The character string that is received via the serial communication.
+% tic;
 persistent row;
 persistent data;
 persistent app;
@@ -69,5 +70,6 @@ end
 %     drawnow
        
     assignin('base', 'sensorData', data);
+%     toc;
 end
 
