@@ -21,7 +21,7 @@ end
 
     warning on backtrace
     string = evalin('base', 'fscanf(arduinoSerial)');
-    splitted = strsplit(string, ',')
+    splitted = strsplit(string, ',');
     placeIn = -1;
     row = row + 1;
     data(row,1) = now; % timestamp the first cell.
