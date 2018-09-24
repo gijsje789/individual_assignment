@@ -3,10 +3,10 @@ function success = setAnalogueSensor(sensorNumber, output, aVal, bVal)
 %
 %   INPUTS:
 %   type        The type of sensor, either 'Analogue' or 'Digital'.
-%   varargin    Expected 3 inputs for analogue sensors: maximum output, a, b
-%            (a*x + b)
-%            Expected 1 input for digital sensors: number of pulses per
-%            unit.
+%   output      The maximum output voltage of the sensor.
+%   aVal        The a value in a*x+b.
+%   bVal        The b value in a*x+b.
+%
 % RETURNS:
 %   success     True when the sensor information is correct. False when one of
 %   the inputs is wrong.
