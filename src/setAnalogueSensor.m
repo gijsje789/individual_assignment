@@ -21,7 +21,7 @@ persistent Sensors
         Sensors{sensorNumber}.a = 0;
         Sensors{sensorNumber}.b = 0;
         success = true;
-        assignin('base', 'Sensors', Sensors);
+        assignin('base', 'analogueSensors', Sensors);
     elseif output <= 0 || output > 3.3
         warning('Maximum output of sensor %d is not within 0 ... 3.3 V.', sensorNumber)
     elseif aVal == 0
@@ -33,7 +33,7 @@ persistent Sensors
         Sensors{sensorNumber}.a = aVal;  % Rico of 'Rico * x + b'
         Sensors{sensorNumber}.b = bVal;  % b of 'Rico * x + b'
         success = true;
-        assignin('base', 'Sensors', Sensors);
+        assignin('base', 'analogueSensors', Sensors);
     end
 end
 
