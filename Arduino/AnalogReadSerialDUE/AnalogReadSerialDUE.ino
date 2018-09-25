@@ -29,7 +29,8 @@ void loop()
     S3Value = analogRead(A2);
     
     // Send the sensor values through the serial connection.
-    string = "S1," + String(S1Value) + ",S2," + String(S2Value) + ",S3," + String(S3Value) + ",\r\n"; 
+    //string = "S1," + String(S1Value) + ",S2," + String(S2Value) + ",S3," + String(S3Value) + ",\r\n"; 
+    string = String(S1Value) + " " + String(S2Value) + " " + String(S3Value) + "\r\n";
     // Last comma is needed to seperate the /r/n from last sensor value.
     Serial.print(string);
 
