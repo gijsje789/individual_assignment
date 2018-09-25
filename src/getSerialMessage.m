@@ -46,7 +46,7 @@ end
         dataHandle.data(row, :) = data(row, :);
 %     end
     %% Plotting
-        if toc(prevTime) >= 0.01 %10 ms
+        if toc(prevTime) >= 0.1 %100 ms
             livePlot(app, row, data);
             prevTime = tic;
         end
