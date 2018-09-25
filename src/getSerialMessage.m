@@ -10,6 +10,7 @@ persistent row;
 persistent data;
 persistent app;
 persistent arduinoSerial;
+persistent dataHandle;
 
 if isempty(app)
     app = evalin('base', 'app');
@@ -23,37 +24,45 @@ end
 if isempty(arduinoSerial)
    arduinoSerial = evalin('base', 'arduinoSerial'); 
 end
-    tic;
+if isempty(dataHandle)
+   if evalin('base', 'exist(''sensorData'')')
+       dataHandle = evalin('base', 'sensorData');
+   else
+       evalin('base', 'sensorData = handleForData');
+       dataHandle = evalin('base', 'sensorData');
+   end
+end
     warning on backtrace  
     string = fscanf(arduinoSerial);
     row = row + 1;
     data(row,1) = now; % timestamp the first cell.
     data(row,2) = row; % use the row index for plotting.
     if row > 10
+        % evaluate the string as three seperate numerical values seperated by a space.
+        % Processing time of 0.0004 seconds = 2500Hz.
         data(row, 3:5) = sscanf(string, '%d', [1 3]);
-    end
-    
-    %% Plotting
-%         if row <= 100
-%             xdata = data(1:row,2); % row for plotting.
-%             ydata = data(1:row,3:5); % S1 & S2 value
-%             plot(app.S1Graph, xdata, ydata);
-%         elseif row > 100
-%             xdata = data(row-100:row,2); % row for plotting
-%             ydata = data(row-100:row,3:5); % S1 & S2 value
-%             set(app.S1Graph.Children(1), 'XData', xdata, 'YData', ydata(:,1), 'Color', [0, 0.45, 0.74]);
-%             set(app.S1Graph.Children(2), 'XData', xdata, 'YData', ydata(:,2), 'Color', [0.85, 0.33, 0.10]);
-%             set(app.S1Graph.Children(3), 'XData', xdata, 'YData', ydata(:,3), 'Color', [0.93, 0.69, 0.13]);
-%         end
-%         app.S1Graph.XLim = [min(xdata), max(xdata)+40];
+        dataHandle.data(row, :) = data(row, :);
 %     end
+    %% Plotting
+        if row <= 100
+            xdata = data(1:row,2); % row for plotting.
+            ydata = data(1:row,3:5); % S1 & S2 value
+            plot(app.S1Graph, xdata, ydata);
+        elseif row > 100
+            xdata = data(row-100:row,2); % row for plotting
+            ydata = data(row-100:row,3:5); % S1 & S2 value
+            set(app.S1Graph.Children(1), 'XData', xdata, 'YData', ydata(:,1), 'Color', [0, 0.45, 0.74]);
+            set(app.S1Graph.Children(2), 'XData', xdata, 'YData', ydata(:,2), 'Color', [0.85, 0.33, 0.10]);
+            set(app.S1Graph.Children(3), 'XData', xdata, 'YData', ydata(:,3), 'Color', [0.93, 0.69, 0.13]);
+        end
+        app.S1Graph.XLim = [min(xdata), max(xdata)+40];
+    end
 
 %     This should be faster than using plot but there is no line being
 %     shown. Tried animatedLine but that is really slow.
 %     set(app.S1Graph.Children, 'XData', xdata, 'YData', ydata);
 %     drawnow
        
-    assignin('base', 'sensorData', data);
-    toc;
+%     assignin('base', 'sensorData', data);
 end
 

@@ -17,7 +17,7 @@ function success = openSerialChannel()
     if strcmp(status, 'closed')
         evalin('base', 'arduinoSerial.BytesAvailableFcnMode = ''terminator'' ');
         evalin('base', 'arduinoSerial.BytesAvailableFcn = @getSerialMessage')
-        evalin('base', 'arduinoSerial.BaudRate = 9600');
+        evalin('base', 'arduinoSerial.BaudRate = 115200');
             
         evalin('base', 'fopen(arduinoSerial)')
         status = evalin('base', 'arduinoSerial.Status');
