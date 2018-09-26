@@ -1,4 +1,4 @@
-function success = openSerialChannel()
+function success = openSerialChannel(app)
 % openSerialChannel() opens the serial channel to which the arduino is
 % connected in the base workspace.
 %   In order to save the incoming data, the base workspace is used for the
@@ -15,16 +15,18 @@ function success = openSerialChannel()
     evalin('base', 'arduinoSerial = serial(serialPort)');
     status = evalin('base', 'arduinoSerial.Status')
     if strcmp(status, 'closed')
+        evalin('base', 'arduinoSerial.BytesAvailableFcnMode = ''terminator'' ');
+        evalin('base', 'arduinoSerial.BytesAvailableFcn = @getSerialMessage')
+        evalin('base', 'arduinoSerial.BaudRate = 115200');
+            
         evalin('base', 'fopen(arduinoSerial)')
         status = evalin('base', 'arduinoSerial.Status');
         if strcmp(status, 'closed')
             warning('Could not open arduino serial port.');
             success = false;
         elseif strcmp(status, 'open')
-            'Opened arduino COM port.'
-            evalin('base', 'arduinoSerial.BytesAvailableFcnMode = ''terminator'' ');
-            evalin('base', 'arduinoSerial.BytesAvailableFcn = @(~,~)readSerialInformation');
-            evalin('base', 'arduinoSerial.BaudRate = 9600');
+            disp('Opened arduino COM port.');
+            plot(app.S1Graph, (1:10)', zeros(10,3)); % empty graph to initialise.
         else
             warning('Unknown error whilst opening COM port.');
             success = false;
