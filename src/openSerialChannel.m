@@ -1,4 +1,4 @@
-function success = openSerialChannel()
+function success = openSerialChannel(app)
 % openSerialChannel() opens the serial channel to which the arduino is
 % connected in the base workspace.
 %   In order to save the incoming data, the base workspace is used for the
@@ -26,7 +26,7 @@ function success = openSerialChannel()
             success = false;
         elseif strcmp(status, 'open')
             'Opened arduino COM port.'
-            
+            plot(app.S1Graph, (1:10)', zeros(10,3)); % empty graph to initialise.
         else
             warning('Unknown error whilst opening COM port.');
             success = false;
