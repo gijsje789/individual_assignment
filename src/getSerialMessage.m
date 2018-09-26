@@ -11,7 +11,7 @@ persistent data;
 persistent app;
 persistent arduinoSerial;
 persistent dataHandle;
-persistent prevTime;
+persistent fileID;
 
 if isempty(app)
     app = evalin('base', 'app');
@@ -33,6 +33,10 @@ if isempty(dataHandle)
        warning('dataHandle not successfully made.');
    end
 end
+if isempty(fileID)
+   fileID = evalin('base', 'outFile');
+end
+
     warning on backtrace  
     string = fscanf(arduinoSerial);
     row = row + 1;
@@ -43,6 +47,10 @@ end
         % Processing time of 0.0004 seconds = 2500Hz.
         data(row, 3:5) = sscanf(string, '%d', [1 3]);
         dataHandle.data(row, :) = data(row, :);
+        
+        % Immediately write to file (dangerous when message frequency is
+        % too high, currently set to 100Hz.
+        fprintf(fileID, '%d,%d,%d,%d,%d\r\n', data(row,:));
     end
 end
 
