@@ -49,8 +49,11 @@ end
         dataHandle.data(row, :) = data(row, :);
         
         % Immediately write to file (dangerous when message frequency is
-        % too high, currently set to 100Hz.
+        % too high, currently set to 100Hz in arduino.
+        % fprintf processing time of 0.0002 seconds = 5000Hz.
         fprintf(fileID, '%d,%d,%d,%d,%d\r\n', data(row,:));
+        
+        % Theoretical communication speed: 1000Hz (safety 500Hz).
     end
 end
 
