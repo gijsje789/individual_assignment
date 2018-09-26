@@ -25,7 +25,7 @@ function success = openSerialChannel(app)
             warning('Could not open arduino serial port.');
             success = false;
         elseif strcmp(status, 'open')
-            'Opened arduino COM port.'
+            disp('Opened arduino COM port.');
             plot(app.S1Graph, (1:10)', zeros(10,3)); % empty graph to initialise.
         else
             warning('Unknown error whilst opening COM port.');

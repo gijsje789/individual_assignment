@@ -30,8 +30,7 @@ if isempty(dataHandle)
    if evalin('base', 'exist(''sensorData'')')
        dataHandle = evalin('base', 'sensorData');
    else
-       evalin('base', 'sensorData = handleForData');
-       dataHandle = evalin('base', 'sensorData');
+       warning('dataHandle not successfully made.');
    end
 end
     warning on backtrace  
@@ -44,19 +43,6 @@ end
         % Processing time of 0.0004 seconds = 2500Hz.
         data(row, 3:5) = sscanf(string, '%d', [1 3]);
         dataHandle.data(row, :) = data(row, :);
-%     end
-    %% Plotting
-        if toc(prevTime) >= 0.1 %100 ms
-            livePlot(app, row, data);
-            prevTime = tic;
-        end
     end
-
-%     This should be faster than using plot but there is no line being
-%     shown. Tried animatedLine but that is really slow.
-%     set(app.S1Graph.Children, 'XData', xdata, 'YData', ydata);
-%     drawnow
-       
-%     assignin('base', 'sensorData', data);
 end
 

@@ -30,7 +30,7 @@ void loop()
     Serial.print(string);
 
     // Necessary for the live plot to update without crashing.
-    delay(3);
+    delay(10);
 }
 
 void countPulses() 
