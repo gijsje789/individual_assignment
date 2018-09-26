@@ -1,4 +1,4 @@
-function success = setAnalogueSensor(sensorNumber, output, aVal, bVal)
+function success = setAnalogueSensor(sensorNumber, output, aVal, bVal, type)
 %setAnalogueSensor Saves the information about the sensor to the base workspace.
 %
 %   INPUTS:
@@ -17,6 +17,7 @@ warning on backtrace
 persistent Sensors
     success = false;
     if output == -1
+        Sensors{sensorNumber}.type = type;
         Sensors{sensorNumber}.OutputVoltage = -1;
         Sensors{sensorNumber}.a = 0;
         Sensors{sensorNumber}.b = 0;
@@ -29,6 +30,7 @@ persistent Sensors
     elseif bVal < 0 || bVal > 3.3
         warning('B value of analogue sensor %d is not within 0 ... 3.3 V.', sensorNumber)
     else % Values are okay.
+        Sensors{sensorNumber}.type = type;
         Sensors{sensorNumber}.OutputVoltage = output; % Maximum output voltage
         Sensors{sensorNumber}.a = aVal;  % Rico of 'Rico * x + b'
         Sensors{sensorNumber}.b = bVal;  % b of 'Rico * x + b'
