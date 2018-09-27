@@ -30,7 +30,7 @@ function livePlot(obj, event, app)
         
         anSensors = 1;
         digSensors = 1;
-        for it = 1:3
+        for it = 1:(size(sensorData.data,2)-2) % All active sensors
             if strcmp(analogueSensors{it}.type, 'flow')
                 set(app.flowGraph.Children(anSensors), 'XData', xdata, 'YData', ydata(:,it));
                 anSensors = anSensors + 1;
