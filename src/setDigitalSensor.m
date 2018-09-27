@@ -9,7 +9,6 @@ function success = setDigitalSensor(sensorNumber, output, type)
 % RETURNS:
 %   success     True when the sensor information is correct. False when one of
 %   the inputs is wrong.
-warning on backtrace
 persistent Sensors
     success = false;
     if output == -1
@@ -25,6 +24,4 @@ persistent Sensors
         success = true;
         assignin('base', 'digitalSensors', Sensors);
     end
-
-
 end

@@ -34,7 +34,6 @@ if isempty(fileID)
    fileID = evalin('base', 'outFile');
 end
 
-    warning on backtrace  
     string = fscanf(arduinoSerial);
     row = row + 1;
     data(row,1) = now; % timestamp the first cell.

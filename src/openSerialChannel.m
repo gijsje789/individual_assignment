@@ -10,7 +10,6 @@ function success = openSerialChannel(app)
 % RETURNS:
 %   success     Returns true when the serial channel has been opened
 %   successfully. Otherwise, false.
-    warning on backtrace
     success = true;
     evalin('base', 'arduinoSerial = serial(serialPort)');
     status = evalin('base', 'arduinoSerial.Status')

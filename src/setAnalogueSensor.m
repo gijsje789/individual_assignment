@@ -13,7 +13,6 @@ function success = setAnalogueSensor(sensorNumber, output, aVal, bVal, type)
 % RETURNS:
 %   success     True when the sensor information is correct. False when one of
 %   the inputs is wrong.
-warning on backtrace
 persistent Sensors
     success = false;
     if output == -1

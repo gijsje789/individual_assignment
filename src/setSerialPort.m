@@ -11,18 +11,17 @@ function success = setSerialPort(port)
 %   RETURNS:
 %   success     Returns true when the COM port is valid and set to the base
 %   workspace. Otherwise, false.
-    warning on backtrace
     success = true;
     if contains(port, 'COM')
         [num, status] = str2num(erase(port,'COM'));
         if status
             assignin('base', 'serialPort', port);
         else
-            warning('COM port might not be correct.');
+            warning('COM port might not be correct.\r\n');
             success = false;
         end
     else
-        warning('Could not find COM.');
+        fprintf(2, 'Could not find COM.\r\n');
         success = false;
     end
 end
