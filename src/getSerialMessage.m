@@ -15,9 +15,6 @@ persistent fileID;
 
 if isempty(app)
     app = evalin('base', 'app');
-    app.flowGraph.XLimMode = 'manual';
-    app.flowGraph.YLimMode = 'manual';
-    app.flowGraph.YLim = [0, 4150];
 end
 if isempty(row)
     row = 0;

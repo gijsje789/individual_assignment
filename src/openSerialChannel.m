@@ -26,7 +26,6 @@ function success = openSerialChannel(app)
             success = false;
         elseif strcmp(status, 'open')
             disp('Opened arduino COM port.');
-            plot(app.flowGraph, (1:10)', zeros(10,3)); % empty graph to initialise.
         else
             warning('Unknown error whilst opening COM port.');
             success = false;
