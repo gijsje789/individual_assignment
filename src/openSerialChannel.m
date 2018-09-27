@@ -11,14 +11,14 @@ function success = openSerialChannel(app)
 %   success     Returns true when the serial channel has been opened
 %   successfully. Otherwise, false.
     success = true;
-    evalin('base', 'arduinoSerial = serial(serialPort)');
-    status = evalin('base', 'arduinoSerial.Status')
+    evalin('base', 'arduinoSerial = serial(serialPort);');
+    status = evalin('base', 'arduinoSerial.Status');
     if strcmp(status, 'closed')
-        evalin('base', 'arduinoSerial.BytesAvailableFcnMode = ''terminator'' ');
-        evalin('base', 'arduinoSerial.BytesAvailableFcn = @getSerialMessage')
-        evalin('base', 'arduinoSerial.BaudRate = 115200');
+        evalin('base', 'arduinoSerial.BytesAvailableFcnMode = ''terminator''; ');
+        evalin('base', 'arduinoSerial.BytesAvailableFcn = @getSerialMessage;')
+        evalin('base', 'arduinoSerial.BaudRate = 115200;');
             
-        evalin('base', 'fopen(arduinoSerial)')
+        evalin('base', 'fopen(arduinoSerial);')
         status = evalin('base', 'arduinoSerial.Status');
         if strcmp(status, 'closed')
             warning('Could not open arduino serial port.');
