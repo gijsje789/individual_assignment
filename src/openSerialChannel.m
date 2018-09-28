@@ -10,23 +10,21 @@ function success = openSerialChannel(app)
 % RETURNS:
 %   success     Returns true when the serial channel has been opened
 %   successfully. Otherwise, false.
-    warning on backtrace
     success = true;
-    evalin('base', 'arduinoSerial = serial(serialPort)');
-    status = evalin('base', 'arduinoSerial.Status')
+    evalin('base', 'arduinoSerial = serial(serialPort);');
+    status = evalin('base', 'arduinoSerial.Status');
     if strcmp(status, 'closed')
-        evalin('base', 'arduinoSerial.BytesAvailableFcnMode = ''terminator'' ');
-        evalin('base', 'arduinoSerial.BytesAvailableFcn = @getSerialMessage')
-        evalin('base', 'arduinoSerial.BaudRate = 115200');
+        evalin('base', 'arduinoSerial.BytesAvailableFcnMode = ''terminator''; ');
+        evalin('base', 'arduinoSerial.BytesAvailableFcn = @getSerialMessage;')
+        evalin('base', 'arduinoSerial.BaudRate = 115200;');
             
-        evalin('base', 'fopen(arduinoSerial)')
+        evalin('base', 'fopen(arduinoSerial);')
         status = evalin('base', 'arduinoSerial.Status');
         if strcmp(status, 'closed')
             warning('Could not open arduino serial port.');
             success = false;
         elseif strcmp(status, 'open')
             disp('Opened arduino COM port.');
-            plot(app.S1Graph, (1:10)', zeros(10,3)); % empty graph to initialise.
         else
             warning('Unknown error whilst opening COM port.');
             success = false;

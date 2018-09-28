@@ -15,9 +15,6 @@ persistent fileID;
 
 if isempty(app)
     app = evalin('base', 'app');
-    app.S1Graph.XLimMode = 'manual';
-    app.S1Graph.YLimMode = 'manual';
-    app.S1Graph.YLim = [0, 4150];
 end
 if isempty(row)
     row = 0;
@@ -37,7 +34,6 @@ if isempty(fileID)
    fileID = evalin('base', 'outFile');
 end
 
-    warning on backtrace  
     string = fscanf(arduinoSerial);
     row = row + 1;
     data(row,1) = now; % timestamp the first cell.

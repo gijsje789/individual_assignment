@@ -1,4 +1,4 @@
-function success = setDigitalSensor(sensorNumber, output)
+function success = setDigitalSensor(sensorNumber, output, type)
 %setDigitalSensor Saves the information about the sensors to the base workspace.
 %
 %   INPUTS:
@@ -9,20 +9,19 @@ function success = setDigitalSensor(sensorNumber, output)
 % RETURNS:
 %   success     True when the sensor information is correct. False when one of
 %   the inputs is wrong.
-warning on backtrace
 persistent Sensors
     success = false;
     if output == -1
+        Sensors{sensorNumber}.type = type;
         Sensors{sensorNumber}.OutputSignal = -1;
         success = true;
         assignin('base', 'digitalSensors', Sensors);
     elseif output <= 0
         warning('Maximum output of digital sensor %d is not > 0.', sensorNumber)
     else % Values are okay.
+        Sensors{sensorNumber}.type = type;
         Sensors{sensorNumber}.OutputSignal = output; % Maximum output in pulses per minute.
         success = true;
         assignin('base', 'digitalSensors', Sensors);
     end
-
-
 end
