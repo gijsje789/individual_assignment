@@ -25,12 +25,7 @@ function success = openSerialChannel(app)
             success = false;
         elseif strcmp(status, 'open')
             disp('Opened arduino COM port.');
-            aSensors = evalin('base', 'ASEnabled');
-            dSensors = evalin('base', 'DSEnabled');
-            temp = sprintf('%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n', aSensors, dSensors);
-            assignin('base', 'sensorMessage', temp);
-            pause(0.1); % needed otherwise sensorMessage is not stored in base workspace.
-            evalin('base', 'fprintf(arduinoSerial, sensorMessage);');
+            sendSensorInformationToArduino(evalin('base', 'arduinoSerial'));
         else
             warning('Unknown error whilst opening COM port.');
             success = false;

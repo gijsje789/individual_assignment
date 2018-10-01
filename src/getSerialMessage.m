@@ -36,32 +36,24 @@ if isempty(fileID)
 end
 if isempty(init)
    init = true;
-   counter = 1;
 end
 
     string = fscanf(arduinoSerial);
-    if init
-        if strfind(string, 'Done.') == 1
-            init = false;
-            disp('Sensors have been set.');
-        end
-    else
-        row = row + 1;
-        data(row,1) = now; % timestamp the first cell.
-        data(row,2) = row; % use the row index for plotting.
-        if row > 10
-            % evaluate the string as three seperate numerical values seperated by a space.
-            % Processing time of 0.0004 seconds = 2500Hz.
-            data(row, 3:5) = sscanf(string, '%d', [1 3]);
-            dataHandle.data(row, :) = data(row, :);
+    row = row + 1;
+    data(row,1) = now; % timestamp the first cell.
+    data(row,2) = row; % use the row index for plotting.
+    if row > 10
+        % evaluate the string as three seperate numerical values seperated by a space.
+        % Processing time of 0.0004 seconds = 2500Hz.
+        data(row, 3:5) = sscanf(string, '%d', [1 3]);
+        dataHandle.data(row, :) = data(row, :);
 
-            % Immediately write to file (dangerous when message frequency is
-            % too high, currently set to 100Hz in arduino.
-            % fprintf processing time of 0.0002 seconds = 5000Hz.
-            fprintf(fileID, '%d,%d,%d,%d,%d\r\n', data(row,:));
+        % Immediately write to file (dangerous when message frequency is
+        % too high, currently set to 100Hz in arduino.
+        % fprintf processing time of 0.0002 seconds = 5000Hz.
+        fprintf(fileID, '%d,%d,%d,%d,%d\r\n', data(row,:));
 
-            % Theoretical communication speed: 1000Hz (safety 500Hz).
-        end        
+        % Theoretical communication speed: 1000Hz (safety 500Hz).
     end
 end
 
