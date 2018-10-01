@@ -20,7 +20,6 @@ int S3Value;
 String inputString = "";
 bool stringComplete = false;
 bool initComplete = false;
-bool activatedSensors[NRSENSORS] = {false, false, false, false, false, false, false, false, false, false};
 float sensorInformation[3][NRSENSORS] = {};
 
 // the setup routine runs once when you press reset:
@@ -46,11 +45,15 @@ void loop()
       String string;
       // read the input on analog pin 0:
       S1Value = analogRead(A0);
+      float S1Voltage = ( ( (float)(S1Value) ) * sensorInformation[siOUTPUT][0] ) / 4095.0;
       S2Value = analogRead(A1);
+      float S2Voltage = ( ( (float)(S2Value) ) * sensorInformation[siOUTPUT][1] ) / 4095.0;
       S3Value = analogRead(A2);
+      float S3Voltage = ( ( (float)(S3Value) ) * sensorInformation[siOUTPUT][2] ) / 4095.0;
       
       // Send the sensor values through the serial connection.
-      string = String(S1Value) + " " + String(S2Value) + " " + String(S3Value) + "\r\n";
+      string = String(S1Voltage) + " " + String(S2Voltage) + " " + String(S3Voltage) + "\r\n";
+      // string = String(sensorInformation[siOUTPUT][0]) + " " + String(sensorInformation[siOUTPUT][1]) + " " + String(sensorInformation[siOUTPUT][2]) + " "  + String(sensorInformation[siOUTPUT][3]) + "\r\n";
       // Last comma is needed to seperate the /r/n from last sensor value.
       Serial.print(string);
   }
