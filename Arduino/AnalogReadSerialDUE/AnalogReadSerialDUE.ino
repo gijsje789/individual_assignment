@@ -1,5 +1,17 @@
 #define NRSENSORS 10
 
+enum messageStatus 
+{
+  msBUSY = 1,
+  msDONE
+};
+
+enum sensorInfo
+{
+  siOUTPUT = 0,
+  siA,
+  siB
+};
 
 volatile int countedPulses = 0;
 int S1Value;
@@ -9,7 +21,7 @@ String inputString = "";
 bool stringComplete = false;
 bool initComplete = false;
 bool activatedSensors[NRSENSORS] = {false, false, false, false, false, false, false, false, false, false};
-int sensorInformation[3][NRSENSORS] = {};
+float sensorInformation[3][NRSENSORS] = {};
 
 // the setup routine runs once when you press reset:
 void setup() 
@@ -53,53 +65,105 @@ void countPulses()
 
 void serialEvent()
 {
-  while(!initComplete)
-  {
     while(Serial.available())
     {
-      if (!stringComplete)
+      // Get new byte.
+      char inChar = (char)Serial.read();
+      
+      // If the incoming character is a newline, set a flag.
+      // Otherwise add it to the input string.
+      if (inChar == '\n')
       {
-        // Get new byte.
-        char inChar = (char)Serial.read();
-        
-        // If the incoming character is a newline, set a flag.
-        // Otherwise add it to the input string.
-        if (inChar == '\n')
-        {
-          stringComplete = true;
-        }
-        else
-        {
-          inputString += inChar;
-        }
-      } // if string complete
+        stringComplete = true;
+      }
+      else
+      {
+        inputString += inChar;
+      }
     } // while
     
     if(stringComplete)
     {
-      int sensor = 1;
-      for(int i = 0; i <= inputString.length()-1; i++)
+      // A string, ending with a new line has been read and needs decoding.
+      
+      //Serial.println(inputString);
+      String sensor = inputString.substring(0, inputString.indexOf(' '));
+      //Serial.println(sensor);
+      inputString.remove(0, inputString.indexOf(' ')+1);
+      //Serial.println(inputString);
+      char enabled = inputString[0];
+      //Serial.println(enabled);
+      inputString.remove(0, inputString.indexOf(' ')+1);
+      //Serial.println(inputString);
+
+      // The first character indicates if information about an analogue or digital sensor is received.
+      // The second character will indicate which sensor number.
+      // The third character must be a space for correct behaviour.
+      // Enabled must be '1' for an enabled sensor, any other value will result in the sensor being disabled.
+      if(sensor[0] == 'A')
       {
-        char tempChar = inputString[i];
-        switch(tempChar)
+        if(enabled == '1')
         {
-          case '1':
-            activatedSensors[sensor-1] = true;
-            sensor++;
-            break;
-          case '0':
-            activatedSensors[sensor-1] = false;
-            sensor++;
-            break;
-          case ',':
-            break;
-        } // Switch
-      } // for
-      stringComplete = false;
-      initComplete = true;
-      Serial.println("Done.");
-    } // if
-  } // while
+          // If an analog sensor is enabled, 3 values are send.
+          sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+          inputString.remove(0, inputString.indexOf(' ')+1);
+          sensorInformation[siA][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+          inputString.remove(0, inputString.indexOf(' ')+1);
+          //Serial.println(inputString);
+          sensorInformation[siB][(int)((sensor[1]-'0')-1)] = inputString.toFloat();
+          //Serial.println(sensorInformation[siB][(int)((sensor[1]-'0')-1)]);
+          inputString = "";
+          stringComplete = false;
+        }
+        else
+        {
+          // If the sensor is disabled, it doesn't matter what values are sent; they are ignored. 
+          sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1)] = -1;
+          sensorInformation[siA][(int)((sensor[1]-'0')-1)] = -1;
+          sensorInformation[siB][(int)((sensor[1]-'0')-1)] = -1;
+          inputString = "";
+          stringComplete = false;
+        }
+        /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1)]) 
+                + ", aVal: " + String(sensorInformation[siA][(int)((sensor[1]-'0')-1)]) + ", bVal: " + String(sensorInformation[siB][(int)((sensor[1]-'0')-1)]));*/
+      }
+      else if (sensor[0] == 'D')
+      {
+        if(enabled == '1')
+        {
+          // If a digital sensor is enabled, one value is expected. Other values will simply be ignored.
+          sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1+5)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+          sensorInformation[siA][(int)((sensor[1]-'0')-1+5)] = -1;
+          sensorInformation[siB][(int)((sensor[1]-'0')-1+5)] = -1;
+          inputString.remove(0, inputString.indexOf(' ')+1);
+          inputString = "";
+          stringComplete = false;
+        }
+        else
+        {
+          // If a digital sensor is disabled, it doesn't matter
+          sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1+5)] = -1;
+          sensorInformation[siA][(int)((sensor[1]-'0')-1+5)] = -1;
+          sensorInformation[siB][(int)((sensor[1]-'0')-1+5)] = -1;
+          inputString = "";
+          stringComplete = false;
+        }
+        /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1+5)]) 
+                + ", aVal: " + String(sensorInformation[siA][(int)((sensor[1]-'0')-1+5)]) + ", bVal: " + String(sensorInformation[siB][(int)((sensor[1]-'0')-1+5)])); */
+      }
+      else if (sensor[0] == 'Q')
+      {
+        //Serial.println("Yup, im done");
+        initComplete = true;
+      }
+      else
+      {
+        // If the data starts weird, information is ignored.
+        //Serial.println("Error: something went wrong." + sensor + " " + enabled);
+        inputString = "";
+        stringComplete = false;
+      }
+  } // if
 } // serialEvent()
 
 void serialEventRun(void) {
