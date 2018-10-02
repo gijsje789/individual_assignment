@@ -10,10 +10,10 @@ function sendArduinoResetSignal()
             fprintf(serial, message);
             pause(0.5);
         else
-            fprintf(2, 'Error: serial is closed.');
+            fprintf(2, 'Error: serial is closed.\n');
         end
     else
-        fprintf(2, 'Error: cannot send reset signal.');
+        fprintf(2, 'Error: cannot send reset signal.\n');
     end
 end
 
