@@ -2,6 +2,7 @@ function livePlot(obj, event, app)
     persistent sensorData
     persistent analogueSensors
     persistent digitalSensors
+    persistent colourTable
 
     if isempty(sensorData)
        sensorData = evalin('base', 'sensorData');
@@ -17,6 +18,18 @@ function livePlot(obj, event, app)
     if isempty(digitalSensors)
         digitalSensors = evalin('base', 'digitalSensors');
     end
+    if isempty(colourTable)
+        colourTable =     [ 1 0 0;          % A1, Red
+                            1 0 1;          % A2, Magenta
+                            1 1 0;          % A3, Yellow
+                            0 1 0;          % A4, Green
+                            0 1 1;          % A5, Cyan
+                            0 0 1;          % D1, Blue
+                            0 0 0;          % D2, Black
+                            0.49 0.18 0.56; % D3, Purple
+                            0.93 0.69 0.13; % D4, Orange
+                            0.65 0.65 0.65];% D5, Gray
+    end
     
     row = size(sensorData.data,1);
     if row > 0
@@ -28,15 +41,17 @@ function livePlot(obj, event, app)
             ydata = sensorData.data(row-1500:row,3:5); % S1 & S2 value
         end
         
-        anSensors = 1;
-        digSensors = 1;
+        fSensors = 1;
+        pSensors = 1;
         for it = 1:(size(sensorData.data,2)-2) % All active sensors
             if strcmp(analogueSensors{it}.type, 'flow')
-                set(app.flowGraph.Children(anSensors), 'XData', xdata, 'YData', ydata(:,it));
-                anSensors = anSensors + 1;
+                set(app.flowGraph.Children(fSensors), 'XData', xdata, 'YData', ydata(:,it));
+                set(app.flowGraph.Children(fSensors), 'Color', colourTable(it,:));
+                fSensors = fSensors + 1;
             elseif strcmp(analogueSensors{it}.type, 'pressure')
-                set(app.pressureGraph.Children(digSensors), 'XData', xdata, 'YData', ydata(:,it));
-                digSensors = digSensors + 1;
+                set(app.pressureGraph.Children(pSensors), 'XData', xdata, 'YData', ydata(:,it));
+                set(app.flowGraph.Children(fSensors), 'Color', colourTable(it,:));
+                pSensors = pSensors + 1;
             else 
             end
         end
