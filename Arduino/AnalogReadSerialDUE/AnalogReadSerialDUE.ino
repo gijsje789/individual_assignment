@@ -1,4 +1,5 @@
 #define NRSENSORS 10
+#define PRECISION 3
 
 enum messageStatus 
 {
@@ -46,16 +47,16 @@ void loop()
       // read the input on analog pin 0:
       S1Value = analogRead(A0);
       float S1Voltage = ( ( (float)(S1Value) ) * sensorInformation[siOUTPUT][0] ) / 4095.0;
+      Serial.print(S1Voltage, PRECISION);
+      Serial.print(' ');
       S2Value = analogRead(A1);
       float S2Voltage = ( ( (float)(S2Value) ) * sensorInformation[siOUTPUT][1] ) / 4095.0;
+      Serial.print(S2Voltage, PRECISION);
+      Serial.print(' ');
       S3Value = analogRead(A2);
       float S3Voltage = ( ( (float)(S3Value) ) * sensorInformation[siOUTPUT][2] ) / 4095.0;
-      
-      // Send the sensor values through the serial connection seperated by spaced, ending in a newline such that matlab can detect end of message.
-      string = String(S1Voltage) + " " + String(S2Voltage) + " " + String(S3Voltage) + "\r\n";
-      // string = String(sensorInformation[siOUTPUT][0]) + " " + String(sensorInformation[siOUTPUT][1]) + " " + String(sensorInformation[siOUTPUT][2]) + " "  + String(sensorInformation[siOUTPUT][3]) + "\r\n";
-      // Last comma is needed to seperate the /r/n from last sensor value.
-      Serial.print(string);
+      Serial.print(S3Voltage, PRECISION);
+      Serial.print("\r\n");
   }
     // Necessary for the live plot to update without crashing.
   delay(10);
