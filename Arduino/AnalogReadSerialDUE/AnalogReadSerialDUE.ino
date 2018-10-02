@@ -51,7 +51,7 @@ void loop()
       S3Value = analogRead(A2);
       float S3Voltage = ( ( (float)(S3Value) ) * sensorInformation[siOUTPUT][2] ) / 4095.0;
       
-      // Send the sensor values through the serial connection.
+      // Send the sensor values through the serial connection seperated by spaced, ending in a newline such that matlab can detect end of message.
       string = String(S1Voltage) + " " + String(S2Voltage) + " " + String(S3Voltage) + "\r\n";
       // string = String(sensorInformation[siOUTPUT][0]) + " " + String(sensorInformation[siOUTPUT][1]) + " " + String(sensorInformation[siOUTPUT][2]) + " "  + String(sensorInformation[siOUTPUT][3]) + "\r\n";
       // Last comma is needed to seperate the /r/n from last sensor value.
@@ -68,6 +68,7 @@ void countPulses()
 
 void serialEvent()
 {
+    // Serial.println("Yup I received something");
     while(Serial.available())
     {
       // Get new byte.
@@ -89,9 +90,9 @@ void serialEvent()
     {
       // A string, ending with a new line has been read and needs decoding.
       
-      //Serial.println(inputString);
+      // Serial.println(inputString);
       String sensor = inputString.substring(0, inputString.indexOf(' '));
-      //Serial.println(sensor);
+      // Serial.println(sensor);
       inputString.remove(0, inputString.indexOf(' ')+1);
       //Serial.println(inputString);
       char enabled = inputString[0];
@@ -157,7 +158,16 @@ void serialEvent()
       else if (sensor[0] == 'Q')
       {
         //Serial.println("Yup, im done");
+        inputString = "";
         initComplete = true;
+      }
+      else if (sensor[0] == 'R')
+      {
+        // Perform watchdog reset.
+        // Serial.println("RESET MEEEE");
+        inputString = "";
+        delay(1000);
+        rstc_start_software_reset(RSTC);
       }
       else
       {
