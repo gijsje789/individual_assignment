@@ -25,12 +25,12 @@ persistent Enabled
         success = true;
         assignin('base', 'analogueSensors', Sensors);
         assignin('base', 'ASEnabled', Enabled);
-    elseif output <= 0 || output > 3.3
-        warning('Maximum output of analogue sensor %d is not within 0 ... 3.3 V.', sensorNumber)
+    elseif output <= 0 || output > 9
+        warning('Maximum output of analogue sensor %d is not within 0 ... 9 V.', sensorNumber)
     elseif aVal == 0
         warning('Rico of analogue sensor %d is 0.', sensorNumber)
-    elseif bVal < 0 || bVal > 3.3
-        warning('B value of analogue sensor %d is not within 0 ... 3.3 V.', sensorNumber)
+    elseif bVal < 0
+        warning('B value of analogue sensor %d is not within > 0 V.', sensorNumber)
     else % Values are okay.
         Sensors{sensorNumber}.type = type;
         Sensors{sensorNumber}.OutputVoltage = output; % Maximum output voltage
