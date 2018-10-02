@@ -38,7 +38,7 @@ if isempty(init)
    init = true;
 end
 
-    string = fscanf(arduinoSerial)
+    string = fscanf(arduinoSerial);
     row = row + 1;
     data(row,1) = now; % timestamp the first cell.
     data(row,2) = row; % use the row index for plotting.
