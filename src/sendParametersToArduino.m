@@ -1,4 +1,4 @@
-function sendSensorInformationToArduino(serial)
+function sendParametersToArduino(serial)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
     analogueSensors = evalin('base', 'analogueSensors');

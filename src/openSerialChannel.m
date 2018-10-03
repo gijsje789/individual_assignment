@@ -25,7 +25,7 @@ function success = openSerialChannel(app)
             success = false;
         elseif strcmp(status, 'open')
             disp('Opened arduino COM port.');
-            sendSensorInformationToArduino(evalin('base', 'arduinoSerial'));
+            sendParametersToArduino(evalin('base', 'arduinoSerial'));
         else
             warning('Unknown error whilst opening COM port.');
             success = false;
