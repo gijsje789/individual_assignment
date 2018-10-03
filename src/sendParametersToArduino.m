@@ -3,11 +3,10 @@ function sendParametersToArduino(serial)
 %   Detailed explanation goes here
     analogueSensors = evalin('base', 'analogueSensors');
     digitalSensors = evalin('base', 'digitalSensors');
+    pumps = evalin('base', 'pumps');
     
     flushinput(serial);
     flushoutput(serial);
-%     message = sprintf('A1 0\n'); % bogus message to clean serial buffer.
-%     fprintf(serial, message);
     pause(1); % delay to ensure that the first message going to the arduino is good.
     
     for i = 1:size(analogueSensors,2)
@@ -36,6 +35,17 @@ function sendParametersToArduino(serial)
        fprintf(serial, message);
        pause(0.1);
     end
+    
+    for i = 1:size(pumps,2)
+       if pumps{i}.flowRate > 0
+           message = sprintf('P%d 1 %.3f %s\n', i, pumps{i}.flowRate, pumps{i}.feedbackSensor);
+       else
+           message = sprintf('P%d 0', i);
+       end
+       fprintf(serial, message);
+       pause(0.1);
+    end
+    
     pause(0.1); % Give the arduino enough time to process the input.
     message = sprintf('Q\n');
     fprintf(serial, message); % Send the "I'm finished sending' signal.

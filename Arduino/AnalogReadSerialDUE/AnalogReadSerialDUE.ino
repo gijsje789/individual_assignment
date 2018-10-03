@@ -1,4 +1,5 @@
 #define NRSENSORS 10
+#define NRPUMPS 4
 #define PRECISION 3
 #define AN1 0 // Analogue sensor 1 -> A1 is analog input 1 of arduino.
 #define AN2 1
@@ -10,6 +11,10 @@
 #define D3 7
 #define D4 8
 #define D5 9
+#define P1 = 0
+#define P2 = 1
+#define P3 = 2
+#define P4 = 3
 #define BIT12ADC 4095
 #define BIT10ADC 1024
 
@@ -26,6 +31,12 @@ enum sensorInfo
   siB
 };
 
+enum pumpInfo
+{
+  piFLOWRATE = 0,
+  piFEEDBACK
+};
+
 volatile int countedPulses = 0;
 int A1Value;
 int A2Value;
@@ -36,6 +47,7 @@ String inputString = "";
 bool stringComplete = false;
 bool initComplete = false;
 float sensorInformation[3][NRSENSORS] = {};
+float pumpInformation[2][NRPUMPS] = {};
 
 // the setup routine runs once when you press reset:
 void setup() 
@@ -159,8 +171,6 @@ void serialEvent()
           //Serial.println(inputString);
           sensorInformation[siB][(int)((sensor[1]-'0')-1)] = inputString.toFloat();
           //Serial.println(sensorInformation[siB][(int)((sensor[1]-'0')-1)]);
-          inputString = "";
-          stringComplete = false;
         }
         else
         {
@@ -168,9 +178,9 @@ void serialEvent()
           sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1)] = -1;
           sensorInformation[siA][(int)((sensor[1]-'0')-1)] = -1;
           sensorInformation[siB][(int)((sensor[1]-'0')-1)] = -1;
-          inputString = "";
-          stringComplete = false;
         }
+        inputString = "";
+        stringComplete = false;
         /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1)]) 
                 + ", aVal: " + String(sensorInformation[siA][(int)((sensor[1]-'0')-1)]) + ", bVal: " + String(sensorInformation[siB][(int)((sensor[1]-'0')-1)]));*/
       }
@@ -183,8 +193,6 @@ void serialEvent()
           sensorInformation[siA][(int)((sensor[1]-'0')-1+5)] = -1;
           sensorInformation[siB][(int)((sensor[1]-'0')-1+5)] = -1;
           inputString.remove(0, inputString.indexOf(' ')+1);
-          inputString = "";
-          stringComplete = false;
         }
         else
         {
@@ -192,11 +200,36 @@ void serialEvent()
           sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1+5)] = -1;
           sensorInformation[siA][(int)((sensor[1]-'0')-1+5)] = -1;
           sensorInformation[siB][(int)((sensor[1]-'0')-1+5)] = -1;
-          inputString = "";
-          stringComplete = false;
         }
+        inputString = "";
+        stringComplete = false;
         /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1+5)]) 
                 + ", aVal: " + String(sensorInformation[siA][(int)((sensor[1]-'0')-1+5)]) + ", bVal: " + String(sensorInformation[siB][(int)((sensor[1]-'0')-1+5)])); */
+      }
+      else if (sensor[0] == 'P')
+      {
+        if(enabled == '1')
+        {
+          pumpInformation[piFLOWRATE][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+          inputString.remove(0, inputString.indexOf(' ')+1);
+
+          if(inputString[0] == 'A')
+          {
+            pumpInformation[piFEEDBACK][(int)((sensor[1]-'0')-1)] = (float)((inputString[1]-'0') -1);
+          }
+          else if(inputString[0] == 'D')
+          {
+            pumpInformation[piFEEDBACK][(int)((sensor[1]-'0')-1)] = (float)((inputString[1]-'0') -1 + 5);
+          }
+        }
+        else
+        {
+          pumpInformation[piFLOWRATE][(int)((sensor[1]-'0')-1)] = -1;
+          pumpInformation[piFEEDBACK][(int)((sensor[1]-'0')-1)] = -1;
+        }
+        inputString = "";
+        stringComplete = false;
+        // Serial.println("Pump: " + sensor + " is " + String(enabled) + ", val: " + String(pumpInformation[piFLOWRATE][(int)((sensor[1]-'0')-1)]) + ", with feedback: " + String(pumpInformation[piFEEDBACK][(int)((sensor[1]-'0')-1)]));
       }
       else if (sensor[0] == 'Q')
       {

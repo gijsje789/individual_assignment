@@ -17,7 +17,7 @@ function success = setPump(pumpNumber, flowrate, feedbackSensor)
         assignin('base', 'pumps', Pumps);
     elseif flowrate >= 0 && flowrate <= 8
         switch feedbackSensor
-            case {'S1', 'S2', 'S3', 'S4', 'S5',...
+            case {'A1', 'A2', 'A3', 'A4', 'A5',...
                     'D1', 'D2', 'D3', 'D4', 'D5'}
                 Pumps{pumpNumber}.flowRate = flowrate;
                 Pumps{pumpNumber}.feedbackSensor = feedbackSensor;
@@ -36,4 +36,3 @@ function success = setPump(pumpNumber, flowrate, feedbackSensor)
                 Pumps{pumpNumber}.feedbackSensor = '';
     end
 end
-
