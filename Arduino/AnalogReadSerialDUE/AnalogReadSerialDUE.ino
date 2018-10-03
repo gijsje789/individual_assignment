@@ -1,5 +1,17 @@
 #define NRSENSORS 10
 #define PRECISION 3
+#define AN1 0 // Analogue sensor 1 -> A1 is analog input 1 of arduino.
+#define AN2 1
+#define AN3 2
+#define AN4 3
+#define AN5 4
+#define D1 5
+#define D2 6
+#define D3 7
+#define D4 8
+#define D5 9
+#define BIT12ADC 4095
+#define BIT10ADC 1024
 
 enum messageStatus 
 {
@@ -46,15 +58,15 @@ void loop()
       String string;
       // read the input on analog pin 0:
       S1Value = analogRead(A0);
-      float S1Voltage = ( ( (float)(S1Value) ) * sensorInformation[siOUTPUT][0] ) / 4095.0;
+      float S1Voltage = ( ( (float)(S1Value) ) * sensorInformation[siOUTPUT][AN1] ) / BIT12ADC;
       Serial.print(S1Voltage, PRECISION);
       Serial.print(' ');
       S2Value = analogRead(A1);
-      float S2Voltage = ( ( (float)(S2Value) ) * sensorInformation[siOUTPUT][1] ) / 4095.0;
+      float S2Voltage = ( ( (float)(S2Value) ) * sensorInformation[siOUTPUT][AN2] ) / BIT12ADC;
       Serial.print(S2Voltage, PRECISION);
       Serial.print(' ');
       S3Value = analogRead(A2);
-      float S3Voltage = ( ( (float)(S3Value) ) * sensorInformation[siOUTPUT][2] ) / 4095.0;
+      float S3Voltage = ( ( (float)(S3Value) ) * sensorInformation[siOUTPUT][AN3] ) / BIT12ADC;
       Serial.print(S3Voltage, PRECISION);
       Serial.print("\r\n");
   }
