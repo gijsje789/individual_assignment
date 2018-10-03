@@ -32,7 +32,11 @@ if isempty(dataHandle)
    end
 end
 if isempty(fileID)
-   fileID = evalin('base', 'outFile');
+    if evalin('base', 'exist(''outFile'')')
+        fileID = evalin('base', 'outFile');
+    else
+        fileID = -1;
+    end
 end
 if isempty(init)
    init = true;
@@ -48,10 +52,12 @@ end
         data(row, 3:12) = sscanf(string, '%f', [1 10]);
         dataHandle.data(row, :) = data(row, :);
 
-        % Immediately write to file (dangerous when message frequency is
-        % too high, currently set to 100Hz in arduino.
-        % fprintf processing time of 0.0002 seconds = 5000Hz.
-        fprintf(fileID, '%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\r\n', data(row,:));
+        if fileID ~= -1
+            % Immediately write to file (dangerous when message frequency is
+            % too high, currently set to 100Hz in arduino.
+            % fprintf processing time of 0.0002 seconds = 5000Hz.
+            fprintf(fileID, '%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\r\n', data(row,:));
+        end
 
         % Theoretical communication speed: 1000Hz (safety 500Hz).
     end
