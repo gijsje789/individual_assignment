@@ -1,7 +1,6 @@
 function livePlot(obj, event, app)
     persistent sensorData
-    persistent analogueSensors
-    persistent digitalSensors
+    persistent sensors
     persistent colourTable
 
     if isempty(sensorData)
@@ -12,12 +11,12 @@ function livePlot(obj, event, app)
        app.pressureGraph.YLimMode = 'auto';
 %        app.flowGraph.YLim = [0, 4150];
     end
-    if isempty(analogueSensors)
-        analogueSensors = evalin('base', 'analogueSensors');
+    if isempty(sensors)
+        tempAnalogue = evalin('base', 'analogueSensors');
+        tempDigital = evalin('base', 'digitalSensors');
+        sensors = [tempAnalogue tempDigital];
     end
-    if isempty(digitalSensors)
-        digitalSensors = evalin('base', 'digitalSensors');
-    end
+   
     if isempty(colourTable)
         colourTable =     [ 1 0 0;          % A1, Red
                             1 0 1;          % A2, Magenta
@@ -45,47 +44,25 @@ function livePlot(obj, event, app)
         pSensors = 1;
         for it = 1:(size(sensorData.data,2)-2) % All active sensors
             plotThisLine = sprintf('plotLines(%d)', it);
-            if it > 0 && it <= 5
-                if strcmp(analogueSensors{it}.type, 'flow')
-                    if evalin('base', plotThisLine)
-                        set(app.flowGraph.Children(fSensors), 'XData', xdata, 'YData', ydata(:,it));
-                        set(app.flowGraph.Children(fSensors), 'Color', colourTable(it,:));
-                    else
-                        set(app.flowGraph.Children(fSensors), 'XData', [], 'YData', []);
-                    end
-                    fSensors = fSensors + 1;
-                elseif strcmp(analogueSensors{it}.type, 'pressure')
-                    if evalin('base', plotThisLine)
-                        set(app.pressureGraph.Children(pSensors), 'XData', xdata, 'YData', ydata(:,it));
-                        set(app.pressureGraph.Children(pSensors), 'Color', colourTable(it,:));
-                    else
-                        set(app.pressureGraph.Children(pSensors), 'XData', [], 'YData', []);
-                    end
-                    pSensors = pSensors + 1;
-                else 
-                    % Sensor is turned off.
-                end
-            else
-                if strcmp(digitalSensors{it-5}.type, 'flow')
-                    if evalin('base', plotThisLine)
-                        set(app.flowGraph.Children(fSensors), 'XData', xdata, 'YData', ydata(:,it));
-                        set(app.flowGraph.Children(fSensors), 'Color', colourTable(it,:));
-                    else
-                        set(app.flowGraph.Children(fSensors), 'XData', [], 'YData', []);
-                    end
-                    fSensors = fSensors + 1;
-                elseif strcmp(digitalSensors{it-5}.type, 'pressure')
-                    if evalin('base', plotThisLine)
-                        set(app.pressureGraph.Children(pSensors), 'XData', xdata, 'YData', ydata(:,it));
-                        set(app.pressureGraph.Children(pSensors), 'Color', colourTable(it,:));
-                    else
-                        set(app.pressureGraph.Children(pSensors), 'XData', [], 'YData', []);
-                    end
-                    pSensors = pSensors + 1;
+            if strcmp(sensors{it}.type, 'flow')
+                if evalin('base', plotThisLine)
+                    set(app.flowGraph.Children(fSensors), 'XData', xdata, 'YData', ydata(:,it));
+                    set(app.flowGraph.Children(fSensors), 'Color', colourTable(it,:));
                 else
-                    % Sensor is turned off.
+                    set(app.flowGraph.Children(fSensors), 'XData', [], 'YData', []);
                 end
-            end % if it > 0 && it <= 5 
+                fSensors = fSensors + 1;
+            elseif strcmp(sensors{it}.type, 'pressure')
+                if evalin('base', plotThisLine)
+                    set(app.pressureGraph.Children(pSensors), 'XData', xdata, 'YData', ydata(:,it));
+                    set(app.pressureGraph.Children(pSensors), 'Color', colourTable(it,:));
+                else
+                    set(app.pressureGraph.Children(pSensors), 'XData', [], 'YData', []);
+                end
+                pSensors = pSensors + 1;
+            else 
+                % Sensor is turned off.
+            end
         end % for
 
         app.flowGraph.XLim = [min(xdata), max(xdata)+40];
