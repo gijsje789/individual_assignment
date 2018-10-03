@@ -27,9 +27,11 @@ enum sensorInfo
 };
 
 volatile int countedPulses = 0;
-int S1Value;
-int S2Value;
-int S3Value;
+int A1Value;
+int A2Value;
+int A3Value;
+int A4Value;
+int A5Value;
 String inputString = "";
 bool stringComplete = false;
 bool initComplete = false;
@@ -47,7 +49,7 @@ void setup()
   inputString.reserve(200);
   
   //Attach the interrupt to the digital pin in order to count the sensor pulses.
-  attachInterrupt(digitalPinToInterrupt(52), countPulses, RISING);
+  attachInterrupt(digitalPinToInterrupt(22), D1Read, RISING);
 } // setup
 
 // the loop routine runs over and over again forever:
@@ -55,26 +57,54 @@ void loop()
 { 
   if(initComplete)
   {
-      String string;
-      // read the input on analog pin 0:
-      S1Value = analogRead(A0);
-      float S1Voltage = ( ( (float)(S1Value) ) * sensorInformation[siOUTPUT][AN1] ) / BIT12ADC;
-      Serial.print(S1Voltage, PRECISION);
+      float sensorOutput[10] = {0};
+      
+      if(sensorInformation[siOUTPUT][AN1] != -1)
+      {
+        A1Value = analogRead(A0);
+        sensorOutput[AN1] = ( ( (float)(A1Value) ) * sensorInformation[siOUTPUT][AN1] ) / BIT12ADC;
+      }
+      Serial.print(sensorOutput[AN1], PRECISION);
       Serial.print(' ');
-      S2Value = analogRead(A1);
-      float S2Voltage = ( ( (float)(S2Value) ) * sensorInformation[siOUTPUT][AN2] ) / BIT12ADC;
-      Serial.print(S2Voltage, PRECISION);
+
+      if(sensorInformation[siOUTPUT][AN2] != -1)
+      {
+        A2Value = analogRead(A1);
+        sensorOutput[AN2] = ( ( (float)(A2Value) ) * sensorInformation[siOUTPUT][AN2] ) / BIT12ADC;
+      }
+      Serial.print(sensorOutput[AN2], PRECISION);
       Serial.print(' ');
-      S3Value = analogRead(A2);
-      float S3Voltage = ( ( (float)(S3Value) ) * sensorInformation[siOUTPUT][AN3] ) / BIT12ADC;
-      Serial.print(S3Voltage, PRECISION);
+
+      if(sensorInformation[siOUTPUT][AN3] != -1)
+      {
+        A3Value = analogRead(A2);
+        sensorOutput[AN3] = ( ( (float)(A3Value) ) * sensorInformation[siOUTPUT][AN3] ) / BIT12ADC;
+      }
+      Serial.print(sensorOutput[AN3], PRECISION);
+      Serial.print(' ');
+
+      if(sensorInformation[siOUTPUT][AN4] != -1)
+      {
+        A4Value = analogRead(A3);
+        sensorOutput[AN4] = ( ( (float)(A4Value) ) * sensorInformation[siOUTPUT][AN4] ) / BIT12ADC;
+      }
+      Serial.print(sensorOutput[AN4], PRECISION);
+      Serial.print(' ');
+
+      if(sensorInformation[siOUTPUT][AN5] != -1)
+      {
+        A5Value = analogRead(A4);
+        sensorOutput[AN5] = ( ( (float)(A5Value) ) * sensorInformation[siOUTPUT][AN5] ) / BIT12ADC;
+      }
+      Serial.print(sensorOutput[AN5], PRECISION);
+      Serial.print(" 0 0 0 0 0");
       Serial.print("\r\n");
   }
     // Necessary for the live plot to update without crashing.
   delay(10);
 }
 
-void countPulses() 
+void D1Read() 
 {
   countedPulses++;
 }

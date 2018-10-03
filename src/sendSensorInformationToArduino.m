@@ -37,7 +37,7 @@ function sendSensorInformationToArduino(serial)
        pause(0.1);
     end
     pause(0.1); % Give the arduino enough time to process the input.
-    message = sprintf('Q\n')
+    message = sprintf('Q\n');
     fprintf(serial, message); % Send the "I'm finished sending' signal.
     disp('Sensors are set.');
 end
