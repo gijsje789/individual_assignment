@@ -12,7 +12,7 @@ function sendParametersToArduino(serial)
     for i = 1:size(analogueSensors,2)
         if analogueSensors{i}.OutputVoltage > 0
             % Sensor is properly enabled.
-            message = sprintf('A%d 1 %.3f %.3f %.3f\n', i, ...
+            message = sprintf('A%d 1 %.10f %.10f %.10f\n', i, ...
                 analogueSensors{i}.OutputVoltage, ...
                 analogueSensors{i}.a, ...
                 analogueSensors{i}.b);
@@ -27,7 +27,7 @@ function sendParametersToArduino(serial)
     for i = 1:size(digitalSensors,2)
        % Sensor is properly enabled.
        if digitalSensors{i}.OutputSignal > 0
-           message = sprintf('D%d 1 %.3f\n', i, digitalSensors{i}.OutputSignal);
+           message = sprintf('D%d 1 %.10f\n', i, digitalSensors{i}.OutputSignal);
        else
            % Sensor is disabled or something else is wrong.
            message = sprintf('D%d 0\n', i);
