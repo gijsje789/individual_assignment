@@ -46,7 +46,7 @@ int A5Value;
 String inputString = "";
 bool stringComplete = false;
 bool initComplete = false;
-float sensorInformation[3][NRSENSORS] = {};
+float sensorParams[3][NRSENSORS] = {};
 float pumpInformation[2][NRPUMPS] = {};
 
 // the setup routine runs once when you press reset:
@@ -71,42 +71,47 @@ void loop()
   {
       float sensorOutput[10] = {0};
       
-      if(sensorInformation[siOUTPUT][AN1] != -1)
+      if(sensorParams[siOUTPUT][AN1] != -1)
       {
         A1Value = analogRead(A0);
-        sensorOutput[AN1] = ( ( (float)(A1Value) ) * sensorInformation[siOUTPUT][AN1] ) / BIT12ADC;
+        sensorOutput[AN1] = ( ( (float)(A1Value) ) * sensorParams[siOUTPUT][AN1] ) / BIT12ADC;
+        sensorOutput[AN1] = (sensorOutput[AN1] - sensorParams[siB][AN1]) / sensorParams[siA][AN1];
       }
       Serial.print(sensorOutput[AN1], PRECISION);
       Serial.print(' ');
 
-      if(sensorInformation[siOUTPUT][AN2] != -1)
+      if(sensorParams[siOUTPUT][AN2] != -1)
       {
         A2Value = analogRead(A1);
-        sensorOutput[AN2] = ( ( (float)(A2Value) ) * sensorInformation[siOUTPUT][AN2] ) / BIT12ADC;
+        sensorOutput[AN2] = ( ( (float)(A2Value) ) * sensorParams[siOUTPUT][AN2] ) / BIT12ADC;
+        sensorOutput[AN2] = (sensorOutput[AN2] - sensorParams[siB][AN2]) / sensorParams[siA][AN2];
       }
       Serial.print(sensorOutput[AN2], PRECISION);
       Serial.print(' ');
 
-      if(sensorInformation[siOUTPUT][AN3] != -1)
+      if(sensorParams[siOUTPUT][AN3] != -1)
       {
         A3Value = analogRead(A2);
-        sensorOutput[AN3] = ( ( (float)(A3Value) ) * sensorInformation[siOUTPUT][AN3] ) / BIT12ADC;
+        sensorOutput[AN3] = ( ( (float)(A3Value) ) * sensorParams[siOUTPUT][AN3] ) / BIT12ADC;
+        sensorOutput[AN3] = (sensorOutput[AN3] - sensorParams[siB][AN3]) / sensorParams[siA][AN3];
       }
       Serial.print(sensorOutput[AN3], PRECISION);
       Serial.print(' ');
 
-      if(sensorInformation[siOUTPUT][AN4] != -1)
+      if(sensorParams[siOUTPUT][AN4] != -1)
       {
         A4Value = analogRead(A3);
-        sensorOutput[AN4] = ( ( (float)(A4Value) ) * sensorInformation[siOUTPUT][AN4] ) / BIT12ADC;
+        sensorOutput[AN4] = ( ( (float)(A4Value) ) * sensorParams[siOUTPUT][AN4] ) / BIT12ADC;
+        sensorOutput[AN4] = (sensorOutput[AN4] - sensorParams[siB][AN4]) / sensorParams[siA][AN4];
       }
       Serial.print(sensorOutput[AN4], PRECISION);
       Serial.print(' ');
 
-      if(sensorInformation[siOUTPUT][AN5] != -1)
+      if(sensorParams[siOUTPUT][AN5] != -1)
       {
         A5Value = analogRead(A4);
-        sensorOutput[AN5] = ( ( (float)(A5Value) ) * sensorInformation[siOUTPUT][AN5] ) / BIT12ADC;
+        sensorOutput[AN5] = ( ( (float)(A5Value) ) * sensorParams[siOUTPUT][AN5] ) / BIT12ADC;
+        sensorOutput[AN5] = (sensorOutput[AN5] - sensorParams[siB][AN5]) / sensorParams[siA][AN5];
       }
       Serial.print(sensorOutput[AN5], PRECISION);
       Serial.print(" 0 0 0 0 0");
@@ -164,47 +169,47 @@ void serialEvent()
         if(enabled == '1')
         {
           // If an analog sensor is enabled, 3 values are send.
-          sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+          sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
           inputString.remove(0, inputString.indexOf(' ')+1);
-          sensorInformation[siA][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+          sensorParams[siA][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
           inputString.remove(0, inputString.indexOf(' ')+1);
           //Serial.println(inputString);
-          sensorInformation[siB][(int)((sensor[1]-'0')-1)] = inputString.toFloat();
-          //Serial.println(sensorInformation[siB][(int)((sensor[1]-'0')-1)]);
+          sensorParams[siB][(int)((sensor[1]-'0')-1)] = inputString.toFloat();
+          //Serial.println(sensorParams[siB][(int)((sensor[1]-'0')-1)]);
         }
         else
         {
           // If the sensor is disabled, it doesn't matter what values are sent; they are ignored. 
-          sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1)] = -1;
-          sensorInformation[siA][(int)((sensor[1]-'0')-1)] = -1;
-          sensorInformation[siB][(int)((sensor[1]-'0')-1)] = -1;
+          sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1)] = -1;
+          sensorParams[siA][(int)((sensor[1]-'0')-1)] = -1;
+          sensorParams[siB][(int)((sensor[1]-'0')-1)] = -1;
         }
         inputString = "";
         stringComplete = false;
-        /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1)]) 
-                + ", aVal: " + String(sensorInformation[siA][(int)((sensor[1]-'0')-1)]) + ", bVal: " + String(sensorInformation[siB][(int)((sensor[1]-'0')-1)]));*/
+        /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1)]) 
+                + ", aVal: " + String(sensorParams[siA][(int)((sensor[1]-'0')-1)]) + ", bVal: " + String(sensorParams[siB][(int)((sensor[1]-'0')-1)]));*/
       }
       else if (sensor[0] == 'D')
       {
         if(enabled == '1')
         {
           // If a digital sensor is enabled, one value is expected. Other values will simply be ignored.
-          sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1+5)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
-          sensorInformation[siA][(int)((sensor[1]-'0')-1+5)] = -1;
-          sensorInformation[siB][(int)((sensor[1]-'0')-1+5)] = -1;
+          sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1+5)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+          sensorParams[siA][(int)((sensor[1]-'0')-1+5)] = -1;
+          sensorParams[siB][(int)((sensor[1]-'0')-1+5)] = -1;
           inputString.remove(0, inputString.indexOf(' ')+1);
         }
         else
         {
           // If a digital sensor is disabled, it doesn't matter
-          sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1+5)] = -1;
-          sensorInformation[siA][(int)((sensor[1]-'0')-1+5)] = -1;
-          sensorInformation[siB][(int)((sensor[1]-'0')-1+5)] = -1;
+          sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1+5)] = -1;
+          sensorParams[siA][(int)((sensor[1]-'0')-1+5)] = -1;
+          sensorParams[siB][(int)((sensor[1]-'0')-1+5)] = -1;
         }
         inputString = "";
         stringComplete = false;
-        /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorInformation[siOUTPUT][(int)((sensor[1]-'0')-1+5)]) 
-                + ", aVal: " + String(sensorInformation[siA][(int)((sensor[1]-'0')-1+5)]) + ", bVal: " + String(sensorInformation[siB][(int)((sensor[1]-'0')-1+5)])); */
+        /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1+5)]) 
+                + ", aVal: " + String(sensorParams[siA][(int)((sensor[1]-'0')-1+5)]) + ", bVal: " + String(sensorParams[siB][(int)((sensor[1]-'0')-1+5)])); */
       }
       else if (sensor[0] == 'P')
       {
