@@ -1,6 +1,7 @@
 #define NRSENSORS 10
 #define NRPUMPS 4
 #define PRECISION 3
+#define SCALING 10000
 #define AN1 0 // Analogue sensor 1 -> A1 is analog input 1 of arduino.
 #define AN2 1
 #define AN3 2
@@ -70,50 +71,56 @@ void loop()
   if(initComplete)
   {
       float sensorOutput[10] = {0};
+      int iSensorOutput[10] = {0};
       
       if(sensorParams[siOUTPUT][AN1] != -1)
       {
         A1Value = analogRead(A0);
         sensorOutput[AN1] = ( ( (float)(A1Value) ) * sensorParams[siOUTPUT][AN1] ) / BIT12ADC;
-        sensorOutput[AN1] = (sensorOutput[AN1] - sensorParams[siB][AN1]) / sensorParams[siA][AN1];
+        iSensorOutput[AN1] = SCALING * (sensorOutput[AN1] - sensorParams[siB][AN1]);
+        iSensorOutput[AN1] = iSensorOutput[AN1] / sensorParams[siA][AN1];
       }
-      Serial.print(sensorOutput[AN1], PRECISION);
+      Serial.print(iSensorOutput[AN1]);
       Serial.print(' ');
 
       if(sensorParams[siOUTPUT][AN2] != -1)
       {
         A2Value = analogRead(A1);
         sensorOutput[AN2] = ( ( (float)(A2Value) ) * sensorParams[siOUTPUT][AN2] ) / BIT12ADC;
-        sensorOutput[AN2] = (sensorOutput[AN2] - sensorParams[siB][AN2]) / sensorParams[siA][AN2];
+        iSensorOutput[AN2] = SCALING * (sensorOutput[AN2] - sensorParams[siB][AN2]); 
+        iSensorOutput[AN2] = iSensorOutput[AN2] / sensorParams[siA][AN2];
       }
-      Serial.print(sensorOutput[AN2], PRECISION);
+      Serial.print(iSensorOutput[AN2]);
       Serial.print(' ');
 
       if(sensorParams[siOUTPUT][AN3] != -1)
       {
         A3Value = analogRead(A2);
         sensorOutput[AN3] = ( ( (float)(A3Value) ) * sensorParams[siOUTPUT][AN3] ) / BIT12ADC;
-        sensorOutput[AN3] = (sensorOutput[AN3] - sensorParams[siB][AN3]) / sensorParams[siA][AN3];
+        iSensorOutput[AN3] = SCALING * (sensorOutput[AN3] - sensorParams[siB][AN3]); 
+        iSensorOutput[AN3] = iSensorOutput[AN3] / sensorParams[siA][AN3];
       }
-      Serial.print(sensorOutput[AN3], PRECISION);
+      Serial.print(iSensorOutput[AN3]);
       Serial.print(' ');
 
       if(sensorParams[siOUTPUT][AN4] != -1)
       {
         A4Value = analogRead(A3);
         sensorOutput[AN4] = ( ( (float)(A4Value) ) * sensorParams[siOUTPUT][AN4] ) / BIT12ADC;
-        sensorOutput[AN4] = (sensorOutput[AN4] - sensorParams[siB][AN4]) / sensorParams[siA][AN4];
+        iSensorOutput[AN4] = SCALING * (sensorOutput[AN4] - sensorParams[siB][AN4]); 
+        iSensorOutput[AN4] = iSensorOutput[AN4] / sensorParams[siA][AN4];
       }
-      Serial.print(sensorOutput[AN4], PRECISION);
+      Serial.print(iSensorOutput[AN4]);
       Serial.print(' ');
 
       if(sensorParams[siOUTPUT][AN5] != -1)
       {
         A5Value = analogRead(A4);
         sensorOutput[AN5] = ( ( (float)(A5Value) ) * sensorParams[siOUTPUT][AN5] ) / BIT12ADC;
-        sensorOutput[AN5] = (sensorOutput[AN5] - sensorParams[siB][AN5]) / sensorParams[siA][AN5];
+        iSensorOutput[AN5] = SCALING * (sensorOutput[AN5] - sensorParams[siB][AN5]); 
+        iSensorOutput[AN5] = iSensorOutput[AN5] / sensorParams[siA][AN5];
       }
-      Serial.print(sensorOutput[AN5], PRECISION);
+      Serial.print(iSensorOutput[AN5]);
       Serial.print(" 0 0 0 0 0");
       Serial.print("\r\n");
   }

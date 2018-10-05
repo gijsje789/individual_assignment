@@ -14,6 +14,8 @@ persistent dataHandle;
 persistent fileID;
 persistent init;
 
+SCALING = 10000;
+
 if isempty(app)
     app = evalin('base', 'app');
 end
@@ -50,6 +52,7 @@ end
         % evaluate the string as three seperate numerical values seperated by a space.
         % Processing time of 0.0004 seconds = 2500Hz.
         data(row, 3:12) = sscanf(string, '%f', [1 10]);
+        data(row,3:12) = data(row,3:12)/SCALING;
         dataHandle.data(row, :) = data(row, :);
 
         if fileID ~= -1
