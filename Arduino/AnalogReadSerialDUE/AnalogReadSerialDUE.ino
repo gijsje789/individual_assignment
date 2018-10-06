@@ -38,7 +38,9 @@ enum pumpInfo
   piFEEDBACK
 };
 
-volatile int countedPulses = 0;
+volatile int D1Value = 0;
+volatile unsigned long timeStamp_D1 = 0;
+volatile float D1Param = 0;
 int A1Value;
 int A2Value;
 int A3Value;
@@ -121,7 +123,9 @@ void loop()
         iSensorOutput[AN5] = iSensorOutput[AN5] / sensorParams[siA][AN5];
       }
       Serial.print(iSensorOutput[AN5]);
-      Serial.print(" 0 0 0 0 0");
+      Serial.print(' ');
+      Serial.print(D1Value);
+      Serial.print(" 0 0 0 0");
       Serial.print("\r\n");
   }
     // Necessary for the live plot to update without crashing.
@@ -130,7 +134,20 @@ void loop()
 
 void D1Read() 
 {
-  countedPulses++;
+  int diff;
+  if (timeStamp_D1 == 0)
+  {
+    timeStamp_D1 = micros();
+  }
+  else
+  {
+    unsigned long current = micros();
+    diff = current - timeStamp_D1;
+    // D1Value = diff;
+    float temp = (float)(60000000.0 / (float) (diff));
+    D1Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D1])));
+    timeStamp_D1 = current;
+  }
 }
 
 void serialEvent()
@@ -161,11 +178,11 @@ void serialEvent()
       String sensor = inputString.substring(0, inputString.indexOf(' '));
       // Serial.println(sensor);
       inputString.remove(0, inputString.indexOf(' ')+1);
-      //Serial.println(inputString);
+      // Serial.println(inputString);
       char enabled = inputString[0];
-      //Serial.println(enabled);
+      // Serial.println(enabled);
       inputString.remove(0, inputString.indexOf(' ')+1);
-      //Serial.println(inputString);
+      // Serial.println(inputString);
 
       // The first character indicates if information about an analogue or digital sensor is received.
       // The second character will indicate which sensor number.
@@ -216,7 +233,8 @@ void serialEvent()
         inputString = "";
         stringComplete = false;
         /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1+5)]) 
-                + ", aVal: " + String(sensorParams[siA][(int)((sensor[1]-'0')-1+5)]) + ", bVal: " + String(sensorParams[siB][(int)((sensor[1]-'0')-1+5)])); */
+                + ", aVal: " + String(sensorParams[siA][(int)((sensor[1]-'0')-1+5)]) + ", bVal: " + String(sensorParams[siB][(int)((sensor[1]-'0')-1+5)]));*/
+        // Serial.println("testing: " +  String(sensorParams[siOUTPUT][D1]) + " " + String(sensorParams[siOUTPUT][D2]) + " " + String(sensorParams[siOUTPUT][D3]) + " " + String(sensorParams[siOUTPUT][D4]) + " " + String(sensorParams[siOUTPUT][D5]));
       }
       else if (sensor[0] == 'P')
       {
@@ -248,6 +266,7 @@ void serialEvent()
         //Serial.println("Yup, im done");
         inputString = "";
         initComplete = true;
+        D1Param = sensorParams[siOUTPUT][D1];
       }
       else if (sensor[0] == 'R')
       {
