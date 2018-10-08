@@ -40,12 +40,21 @@ enum pumpInfo
 
 volatile int D1Value = 0;
 volatile unsigned long timeStamp_D1 = 0;
-volatile float D1Param = 0;
+volatile int D2Value = 0;
+volatile unsigned long timeStamp_D2 = 0;
+volatile int D3Value = 0;
+volatile unsigned long timeStamp_D3 = 0;
+volatile int D4Value = 0;
+volatile unsigned long timeStamp_D4 = 0;
+volatile int D5Value = 0;
+volatile unsigned long timeStamp_D5 = 0;
+
 int A1Value;
 int A2Value;
 int A3Value;
 int A4Value;
 int A5Value;
+
 String inputString = "";
 bool stringComplete = false;
 bool initComplete = false;
@@ -65,6 +74,11 @@ void setup()
   
   //Attach the interrupt to the digital pin in order to count the sensor pulses.
   attachInterrupt(digitalPinToInterrupt(33), D1Read, RISING);
+  attachInterrupt(digitalPinToInterrupt(35), D2Read, RISING);
+  /******* Uncomment and enter correct pin ******/
+  // attachInterrupt(digitalPinToInterrupt(37), D3Read, RISING);
+  // attachInterrupt(digitalPinToInterrupt(39), D4Read, RISING);
+  // attachInterrupt(digitalPinToInterrupt(41), D5Read, RISING);
 } // setup
 
 // the loop routine runs over and over again forever:
@@ -143,10 +157,79 @@ void D1Read()
   {
     unsigned long current = micros();
     diff = current - timeStamp_D1;
-    // D1Value = diff;
     float temp = (float)(60000000.0 / (float) (diff));
     D1Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D1])));
     timeStamp_D1 = current;
+  }
+}
+
+void D2Read() 
+{
+  unsigned long diff;
+  if (timeStamp_D2 == 0)
+  {
+    timeStamp_D2 = micros();
+  }
+  else
+  {
+    unsigned long current = micros();
+    diff = current - timeStamp_D2;
+    float temp = (float)(60000000.0 / (float) (diff));
+    D2Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D2])));
+    timeStamp_D2 = current;
+  }
+}
+
+void D3Read() 
+{
+  unsigned long diff;
+  if (timeStamp_D3 == 0)
+  {
+    timeStamp_D3 = micros();
+  }
+  else
+  {
+    unsigned long current = micros();
+    diff = current - timeStamp_D3;
+    float temp = (float)(60000000.0 / (float) (diff));
+    D3Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D3])));
+    timeStamp_D3 = current;
+  }
+}
+
+
+void D4Read() 
+{
+  unsigned long diff;
+  if (timeStamp_D4 == 0)
+  {
+    timeStamp_D4 = micros();
+  }
+  else
+  {
+    unsigned long current = micros();
+    diff = current - timeStamp_D4;
+    float temp = (float)(60000000.0 / (float) (diff));
+    D4Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D4])));
+    timeStamp_D4 = current;
+  }
+}
+
+
+void D5Read() 
+{
+  unsigned long diff;
+  if (timeStamp_D5 == 0)
+  {
+    timeStamp_D5 = micros();
+  }
+  else
+  {
+    unsigned long current = micros();
+    diff = current - timeStamp_D5;
+    float temp = (float)(60000000.0 / (float) (diff));
+    D5Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D5])));
+    timeStamp_D5 = current;
   }
 }
 
@@ -266,7 +349,6 @@ void serialEvent()
         //Serial.println("Yup, im done");
         inputString = "";
         initComplete = true;
-        D1Param = sensorParams[siOUTPUT][D1];
       }
       else if (sensor[0] == 'R')
       {
