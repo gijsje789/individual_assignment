@@ -1,3 +1,4 @@
+#include <SimpleTimer.h>
 #define NRSENSORS 10
 #define NRPUMPS 4
 #define PRECISION 3
