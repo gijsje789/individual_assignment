@@ -64,7 +64,7 @@ void setup()
   inputString.reserve(200);
   
   //Attach the interrupt to the digital pin in order to count the sensor pulses.
-  attachInterrupt(digitalPinToInterrupt(22), D1Read, RISING);
+  attachInterrupt(digitalPinToInterrupt(33), D1Read, RISING);
 } // setup
 
 // the loop routine runs over and over again forever:
@@ -134,7 +134,7 @@ void loop()
 
 void D1Read() 
 {
-  int diff;
+  unsigned long diff;
   if (timeStamp_D1 == 0)
   {
     timeStamp_D1 = micros();

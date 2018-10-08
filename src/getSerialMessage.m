@@ -59,7 +59,7 @@ end
             % Immediately write to file (dangerous when message frequency is
             % too high, currently set to 100Hz in arduino.
             % fprintf processing time of 0.0002 seconds = 5000Hz.
-            fprintf(fileID, '%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\r\n', data(row,:));
+            fprintf(fileID, '%d,%d,%.10f,%.10f,%.10f,%.10f,%.10f,%.10f,%.10f,%.10f,%.10f,%.10f\r\n', data(row,:));
         end
 
         % Theoretical communication speed: 1000Hz (safety 500Hz).
