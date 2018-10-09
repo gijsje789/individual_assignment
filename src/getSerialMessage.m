@@ -33,17 +33,16 @@ if isempty(dataHandle)
        warning('dataHandle not successfully made.');
    end
 end
-if isempty(fileID)
+if isempty(init)
+   init = true;
+end
+    % Check if the measurment should start.
     if evalin('base', 'exist(''outFile'')')
         fileID = evalin('base', 'outFile');
     else
         fileID = -1;
     end
-end
-if isempty(init)
-   init = true;
-end
-
+    
     string = fscanf(arduinoSerial);
     row = row + 1;
     data(row,1) = now; % timestamp the first cell.
