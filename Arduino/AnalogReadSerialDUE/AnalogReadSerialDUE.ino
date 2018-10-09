@@ -59,8 +59,16 @@ int A5Value;
 String inputString = "";
 bool stringComplete = false;
 bool initComplete = false;
+
 float sensorParams[3][NRSENSORS] = {};
 float pumpInformation[2][NRPUMPS] = {};
+
+SimpleTimer DS_Timer;
+int D1_TimerID;
+int D2_TimerID;
+int D3_TimerID;
+int D4_TimerID;
+int D5_TimerID;
 
 // the setup routine runs once when you press reset:
 void setup() 
@@ -150,6 +158,7 @@ void loop()
 void D1Read() 
 {
   unsigned long diff;
+  DS_Timer.restartTimer(D1_TimerID);
   if (timeStamp_D1 == 0)
   {
     timeStamp_D1 = micros();
@@ -164,9 +173,15 @@ void D1Read()
   }
 }
 
+void D1_ResetValue()
+{
+  D1Value = 0;
+}
+
 void D2Read() 
 {
   unsigned long diff;
+  DS_Timer.restartTimer(D2_TimerID);
   if (timeStamp_D2 == 0)
   {
     timeStamp_D2 = micros();
@@ -181,9 +196,15 @@ void D2Read()
   }
 }
 
+void D2_ResetValue()
+{
+  D2Value = 0;
+}
+
 void D3Read() 
 {
   unsigned long diff;
+  DS_Timer.restartTimer(D3_TimerID);
   if (timeStamp_D3 == 0)
   {
     timeStamp_D3 = micros();
@@ -198,10 +219,16 @@ void D3Read()
   }
 }
 
+void D3_ResetValue()
+{
+  D3Value = 0;
+}
+
 
 void D4Read() 
 {
   unsigned long diff;
+  DS_Timer.restartTimer(D4_TimerID);
   if (timeStamp_D4 == 0)
   {
     timeStamp_D4 = micros();
@@ -216,10 +243,16 @@ void D4Read()
   }
 }
 
+void D4_ResetValue()
+{
+  D4Value = 0;
+}
+
 
 void D5Read() 
 {
   unsigned long diff;
+  DS_Timer.restartTimer(D5_TimerID);
   if (timeStamp_D5 == 0)
   {
     timeStamp_D5 = micros();
@@ -232,6 +265,11 @@ void D5Read()
     D5Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D5])));
     timeStamp_D5 = current;
   }
+}
+
+void D5_ResetValue()
+{
+  D5Value = 0;
 }
 
 void serialEvent()
@@ -349,6 +387,21 @@ void serialEvent()
       {
         //Serial.println("Yup, im done");
         inputString = "";
+        D1_TimerID = DS_Timer.setInterval(1000, D1_ResetValue);
+        D2_TimerID = DS_Timer.setInterval(1000, D2_ResetValue);
+        D3_TimerID = DS_Timer.setInterval(1000, D3_ResetValue);
+        D4_TimerID = DS_Timer.setInterval(1000, D4_ResetValue);
+        D5_TimerID = DS_Timer.setInterval(1000, D5_ResetValue);
+        DS_Timer.enable(D1_TimerID);
+        DS_Timer.enable(D2_TimerID);
+        DS_Timer.enable(D3_TimerID);
+        DS_Timer.enable(D4_TimerID);
+        DS_Timer.enable(D5_TimerID);
+        DS_Timer.restartTimer(D1_TimerID);
+        DS_Timer.restartTimer(D2_TimerID);
+        DS_Timer.restartTimer(D3_TimerID);
+        DS_Timer.restartTimer(D4_TimerID);
+        DS_Timer.restartTimer(D5_TimerID);
         initComplete = true;
       }
       else if (sensor[0] == 'R')
@@ -356,6 +409,11 @@ void serialEvent()
         // Perform watchdog reset.
         // Serial.println("RESET MEEEE");
         inputString = "";
+        DS_Timer.deleteTimer(D1_TimerID);
+        DS_Timer.deleteTimer(D2_TimerID);
+        DS_Timer.deleteTimer(D3_TimerID);
+        DS_Timer.deleteTimer(D4_TimerID);
+        DS_Timer.deleteTimer(D5_TimerID);
         delay(1000);
         rstc_start_software_reset(RSTC);
       }
