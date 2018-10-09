@@ -79,20 +79,20 @@ function livePlot(obj, event, app)
         if strcmp(app.FlowAutoscaleYSwitch.Value, 'Yes') ...
                 || strcmp(app.PressureAutoscaleYSwitch.Value, 'Yes') % autoscale is turned on for either graphs.
             elapsed = toc(resetAutoscale);
-            if elapsed > 1
+            if elapsed > 5
                 ylim(app.flowGraph, 'auto');
                 ylim(app.pressureGraph, 'auto');
                 resetAutoscale = tic;
             else
                 if strcmp(app.FlowAutoscaleYSwitch.Value, 'Yes')... 
                         && app.flowGraph.YLim(2)-app.flowGraph.YLim(1) < flowMinscale
-                    app.flowGraph.YLim(1) = app.flowGraph.YLim(1) + 0.5 * flowMinscale;
+                    app.flowGraph.YLim(1) = app.flowGraph.YLim(1) - 0.5 * flowMinscale;
                     app.flowGraph.YLim(2) = app.flowGraph.YLim(2) + 0.5 * flowMinscale;
                 end
                 if strcmp(app.PressureAutoscaleYSwitch.Value, 'Yes')...
                         && app.pressureGraph.YLim(2)-app.pressureGraph.YLim(1) < pressureMinscale
-                    app.pressureGraph.YLim(1) = app.pressureGraph.YLim(1) + 0.5 * pressureMinscale;
-                    app.pressureGrpah.YLim(2) = app.pressureGraph.YLim(2) + 0.5 * pressureMinscale;
+                    app.pressureGraph.YLim(1) = app.pressureGraph.YLim(1) - 0.5 * pressureMinscale;
+                    app.pressureGraph.YLim(2) = app.pressureGraph.YLim(2) + 0.5 * pressureMinscale;
                 end
             end % elapsed
         end % either auto scale switch is turned to yes.
