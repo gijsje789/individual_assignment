@@ -2,11 +2,13 @@ function livePlot(obj, event, app)
     persistent sensorData
     persistent sensors
     persistent colourTable
-    persistent resetAutoscale
+    persistent resetAutoscaleFlow
+    persistent resetAutoscalePressure
     
     flowMinscale = 0.5; % L/min
     pressureMinscale = 10; % mmHg
-
+    minScale_timeout = 1; % Timeout to set the graphs back to autoscale.
+    %% Initialisation
     if isempty(sensorData)
        sensorData = evalin('base', 'sensorData');
        app.flowGraph.XLimMode = 'manual';
@@ -34,10 +36,13 @@ function livePlot(obj, event, app)
                             0.65 0.65 0.65];% D5, Gray
     end
     
-    if isempty(resetAutoscale)
-        resetAutoscale = tic;
+    if isempty(resetAutoscaleFlow)
+        resetAutoscaleFlow = tic;
     end
-    
+    if isempty(resetAutoscalePressure)
+        resetAutoscalePressure = tic;
+    end
+    %% Main code
     row = size(sensorData.data,1);
     if row > 0
         if row <= 1500
@@ -76,25 +81,30 @@ function livePlot(obj, event, app)
         app.flowGraph.XLim = [min(xdata), max(xdata)+40];
         app.pressureGraph.XLim = [min(xdata), max(xdata)+40];
         
-        if strcmp(app.FlowAutoscaleYSwitch.Value, 'Yes') ...
+        if strcmp(app.FlowAutoscaleYSwitch.Value, 'Yes')...
                 || strcmp(app.PressureAutoscaleYSwitch.Value, 'Yes') % autoscale is turned on for either graphs.
-            elapsed = toc(resetAutoscale);
-            if elapsed > 5
-                ylim(app.flowGraph, 'auto');
-                ylim(app.pressureGraph, 'auto');
-                resetAutoscale = tic;
-            else
-                if strcmp(app.FlowAutoscaleYSwitch.Value, 'Yes')... 
-                        && app.flowGraph.YLim(2)-app.flowGraph.YLim(1) < flowMinscale
+            elapsed_flow = toc(resetAutoscaleFlow);
+            if strcmp(app.FlowAutoscaleYSwitch.Value, 'Yes')
+                if elapsed_flow > minScale_timeout
+                    ylim(app.flowGraph, 'auto');
+                    resetAutoscaleFlow = tic;
+                elseif app.flowGraph.YLim(2)-app.flowGraph.YLim(1) < flowMinscale
                     app.flowGraph.YLim(1) = app.flowGraph.YLim(1) - 0.5 * flowMinscale;
                     app.flowGraph.YLim(2) = app.flowGraph.YLim(2) + 0.5 * flowMinscale;
+                    resetAutoscaleFlow = tic;
                 end
-                if strcmp(app.PressureAutoscaleYSwitch.Value, 'Yes')...
-                        && app.pressureGraph.YLim(2)-app.pressureGraph.YLim(1) < pressureMinscale
+            end
+            elapsed_pressure = toc(resetAutoscalePressure);
+            if strcmp(app.PressureAutoscaleYSwitch.Value, 'Yes')
+                if elapsed_pressure > minScale_timeout 
+                    ylim(app.pressureGraph, 'auto');
+                    resetAutoscalePressure = tic;
+                elseif app.pressureGraph.YLim(2)-app.pressureGraph.YLim(1) < pressureMinscale
                     app.pressureGraph.YLim(1) = app.pressureGraph.YLim(1) - 0.5 * pressureMinscale;
                     app.pressureGraph.YLim(2) = app.pressureGraph.YLim(2) + 0.5 * pressureMinscale;
+                    resetAutoscalePressure = tic;
                 end
-            end % elapsed
+            end
         end % either auto scale switch is turned to yes.
         
     end % row > 0
