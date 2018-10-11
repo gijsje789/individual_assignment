@@ -46,7 +46,7 @@ function sendParametersToArduino(serial)
        pause(0.1);
     end
     
-    message = sprintf('C 1 0.01 1\n');
+    message = sprintf('C 1 0.01 0.01\n');
     fprintf(serial, message);
     pause(0.1);
     
