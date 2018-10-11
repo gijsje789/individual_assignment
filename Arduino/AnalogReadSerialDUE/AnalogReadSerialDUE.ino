@@ -101,6 +101,7 @@ void setup()
   inputString.reserve(200);
 
   pinMode(P1_PWM, OUTPUT);
+  analogWriteResolution(12);
   pinMode(P1_INH, OUTPUT);
   
   // Attach the interrupt to the digital pin in order to count the sensor pulses.
@@ -443,7 +444,7 @@ void serialEvent()
         float Ki = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
         inputString.remove(0, inputString.indexOf(' ')+1);
         float Kp = (inputString.toFloat());
-        P1_Controller.setParameters(10, Ki, Kp, 255, 0, 255, SCALING);
+        P1_Controller.setParameters(10, Ki, Kp, 4095, 0, 4095, SCALING);
         inputString = "";
         stringComplete = false;
       }

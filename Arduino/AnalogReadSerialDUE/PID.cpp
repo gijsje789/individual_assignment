@@ -52,7 +52,7 @@ int PID::getControlSignal(int setPoint, int measured)
 	int I = _Ki * _integral;
 	
 	int output = P + I;
-	output = (255.0/80000.0)*(float)(output);
+	output = ((float)_max/80000.0)*(float)(output);
 	
 	/* Serial.print(" e ");
 	Serial.print(e);
