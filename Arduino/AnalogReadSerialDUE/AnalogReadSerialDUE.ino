@@ -1,4 +1,6 @@
 #include <SimpleTimer.h>
+#include "PID.h"
+#define DELAYTIME 10 // ms
 #define NRSENSORS 10
 #define NRPUMPS 4
 #define PRECISION 3
@@ -13,13 +15,27 @@
 #define D3 7
 #define D4 8
 #define D5 9
-#define P1 = 0
-#define P2 = 1
-#define P3 = 2
-#define P4 = 3
+#define P1 0
+#define P2 1
+#define P3 2
+#define P4 3
 #define BIT12ADC 4095
 #define BIT10ADC 1024
-#define MAXANALOGVOLTAGE 5.0 // The voltage divider is based on the conversion of 5VDC to 3.3VDC. 
+#define MAXANALOGVOLTAGE 5.0 // The voltage divider is based on the conversion of 5VDC to 3.3VDC.
+#define AN1PIN A0
+#define AN2PIN A1
+#define AN3PIN A2
+#define AN4PIN A3
+#define AN5PIN A4
+#define D1PIN 33
+#define D2PIN 35
+#define D3PIN 37
+#define D4PIN 39
+#define D5PIN 41
+#define P1_PWM 13
+#define P1_INH 51
+#define P2_PWM 12
+#define P3_INH 49
 
 enum messageStatus 
 {
@@ -62,7 +78,7 @@ bool stringComplete = false;
 bool initComplete = false;
 
 float sensorParams[3][NRSENSORS] = {};
-float pumpInformation[2][NRPUMPS] = {};
+float pumpParams[2][NRPUMPS] = {};
 
 SimpleTimer DS_Timer;
 int D1_TimerID;
@@ -70,6 +86,8 @@ int D2_TimerID;
 int D3_TimerID;
 int D4_TimerID;
 int D5_TimerID;
+
+PID P1_Controller;
 
 // the setup routine runs once when you press reset:
 void setup() 
@@ -81,14 +99,17 @@ void setup()
 
   // reserve 200 bytes for the inputString.
   inputString.reserve(200);
+
+  pinMode(P1_PWM, OUTPUT);
+  pinMode(P1_INH, OUTPUT);
   
-  //Attach the interrupt to the digital pin in order to count the sensor pulses.
-  attachInterrupt(digitalPinToInterrupt(33), D1Read, RISING);
-  attachInterrupt(digitalPinToInterrupt(35), D2Read, RISING);
+  // Attach the interrupt to the digital pin in order to count the sensor pulses.
+  attachInterrupt(digitalPinToInterrupt(D1PIN), D1Read, RISING);
+  attachInterrupt(digitalPinToInterrupt(D2PIN), D2Read, RISING);
   /******* Uncomment and enter correct pin ******/
-  // attachInterrupt(digitalPinToInterrupt(37), D3Read, RISING);
-  // attachInterrupt(digitalPinToInterrupt(39), D4Read, RISING);
-  // attachInterrupt(digitalPinToInterrupt(41), D5Read, RISING);
+  // attachInterrupt(digitalPinToInterrupt(D3PIN), D3Read, RISING);
+  // attachInterrupt(digitalPinToInterrupt(D4PIN), D4Read, RISING);
+  // attachInterrupt(digitalPinToInterrupt(D5PIN), D5Read, RISING);
 } // setup
 
 // the loop routine runs over and over again forever:
@@ -103,7 +124,7 @@ void loop()
       
       if(sensorParams[siOUTPUT][AN1] != -1)
       {
-        A1Value = analogRead(A0);
+        A1Value = analogRead(AN1PIN);
         sensorOutput[AN1] = ( ( (float)(A1Value) ) * MAXANALOGVOLTAGE ) / BIT12ADC;
         iSensorOutput[AN1] = SCALING * (sensorOutput[AN1] - sensorParams[siB][AN1]);
         iSensorOutput[AN1] = iSensorOutput[AN1] / sensorParams[siA][AN1];
@@ -113,7 +134,7 @@ void loop()
 
       if(sensorParams[siOUTPUT][AN2] != -1)
       {
-        A2Value = analogRead(A1);
+        A2Value = analogRead(AN2PIN);
         sensorOutput[AN2] = ( ( (float)(A2Value) ) * MAXANALOGVOLTAGE ) / BIT12ADC;
         iSensorOutput[AN2] = SCALING * (sensorOutput[AN2] - sensorParams[siB][AN2]); 
         iSensorOutput[AN2] = iSensorOutput[AN2] / sensorParams[siA][AN2];
@@ -123,7 +144,7 @@ void loop()
 
       if(sensorParams[siOUTPUT][AN3] != -1)
       {
-        A3Value = analogRead(A2);
+        A3Value = analogRead(AN3PIN);
         sensorOutput[AN3] = ( ( (float)(A3Value) ) * MAXANALOGVOLTAGE ) / BIT12ADC;
         iSensorOutput[AN3] = SCALING * (sensorOutput[AN3] - sensorParams[siB][AN3]); 
         iSensorOutput[AN3] = iSensorOutput[AN3] / sensorParams[siA][AN3];
@@ -133,7 +154,7 @@ void loop()
 
       if(sensorParams[siOUTPUT][AN4] != -1)
       {
-        A4Value = analogRead(A3);
+        A4Value = analogRead(AN4PIN);
         sensorOutput[AN4] = ( ( (float)(A4Value) ) * MAXANALOGVOLTAGE ) / BIT12ADC;
         iSensorOutput[AN4] = SCALING * (sensorOutput[AN4] - sensorParams[siB][AN4]); 
         iSensorOutput[AN4] = iSensorOutput[AN4] / sensorParams[siA][AN4];
@@ -143,19 +164,50 @@ void loop()
 
       if(sensorParams[siOUTPUT][AN5] != -1)
       {
-        A5Value = analogRead(A4);
+        A5Value = analogRead(AN5PIN);
         sensorOutput[AN5] = ( ( (float)(A5Value) ) * MAXANALOGVOLTAGE ) / BIT12ADC;
         iSensorOutput[AN5] = SCALING * (sensorOutput[AN5] - sensorParams[siB][AN5]); 
         iSensorOutput[AN5] = iSensorOutput[AN5] / sensorParams[siA][AN5];
       }
       Serial.print(iSensorOutput[AN5]);
       Serial.print(' ');
-      Serial.print(D1Value);
-      Serial.print(" 0 0 0 0");
+
+      iSensorOutput[D1] = D1Value;
+      Serial.print(iSensorOutput[D1]);
+      Serial.print(' ');
+
+      iSensorOutput[D2] = D2Value;
+      Serial.print(iSensorOutput[D2]);
+      Serial.print(' ');
+
+      iSensorOutput[D3] = D3Value;
+      Serial.print(iSensorOutput[D3]);
+      Serial.print(' ');
+
+      iSensorOutput[D4] = D4Value;
+      Serial.print(iSensorOutput[D4]);
+      Serial.print(' ');
+
+      iSensorOutput[D5] = D5Value;
+      Serial.print(iSensorOutput[D5]);
+      
+
+      if(pumpParams[piFLOWRATE][P1] != -1)
+      {
+        // Flowrate in the pumpParams is the nonscaled version in L/min, calculated sensor value is scaled by SCALING
+        digitalWrite(P1_INH, HIGH);
+        int PWM_val = P1_Controller.getControlSignal(SCALING*pumpParams[piFLOWRATE][P1], iSensorOutput[(int)pumpParams[piFEEDBACK][P1]]);
+        analogWrite(P1_PWM, PWM_val);
+      }
+      else
+      {
+        digitalWrite(P1_INH, LOW); // Put H-bridge to sleep.
+        analogWrite(P1_PWM, 0); // Do not send a PWM signal.
+      }
       Serial.print("\r\n");
-  }
-    // Necessary for the live plot to update without crashing.
-  delay(10);
+    } // if Initcomplete
+    // Sampling and communication frequency. 100Hz as set by meeting with Marcel and Marije Kamphuis.
+  delay(DELAYTIME);
 }
 
 void D1Read() 
@@ -365,26 +417,35 @@ void serialEvent()
       {
         if(enabled == '1')
         {
-          pumpInformation[piFLOWRATE][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+          pumpParams[piFLOWRATE][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
           inputString.remove(0, inputString.indexOf(' ')+1);
 
           if(inputString[0] == 'A')
           {
-            pumpInformation[piFEEDBACK][(int)((sensor[1]-'0')-1)] = (float)((inputString[1]-'0') -1);
+            pumpParams[piFEEDBACK][(int)((sensor[1]-'0')-1)] = (float)((inputString[1]-'0') -1);
           }
           else if(inputString[0] == 'D')
           {
-            pumpInformation[piFEEDBACK][(int)((sensor[1]-'0')-1)] = (float)((inputString[1]-'0') -1 + 5);
+            pumpParams[piFEEDBACK][(int)((sensor[1]-'0')-1)] = (float)((inputString[1]-'0') -1 + 5);
           }
         }
         else
         {
-          pumpInformation[piFLOWRATE][(int)((sensor[1]-'0')-1)] = -1;
-          pumpInformation[piFEEDBACK][(int)((sensor[1]-'0')-1)] = -1;
+          pumpParams[piFLOWRATE][(int)((sensor[1]-'0')-1)] = -1;
+          pumpParams[piFEEDBACK][(int)((sensor[1]-'0')-1)] = -1;
         }
         inputString = "";
         stringComplete = false;
-        // Serial.println("Pump: " + sensor + " is " + String(enabled) + ", val: " + String(pumpInformation[piFLOWRATE][(int)((sensor[1]-'0')-1)]) + ", with feedback: " + String(pumpInformation[piFEEDBACK][(int)((sensor[1]-'0')-1)]));
+        // Serial.println("Pump: " + sensor + " is " + String(enabled) + ", val: " + String(pumpParams[piFLOWRATE][(int)((sensor[1]-'0')-1)]) + ", with feedback: " + String(pumpParams[piFEEDBACK][(int)((sensor[1]-'0')-1)]));
+      }
+      else if (sensor[0] == 'C')
+      {
+        float Ki = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+        inputString.remove(0, inputString.indexOf(' ')+1);
+        float Kp = (inputString.toFloat());
+        P1_Controller.setParameters(10, Ki, Kp, 255, 0, 255, SCALING);
+        inputString = "";
+        stringComplete = false;
       }
       else if (sensor[0] == 'Q')
       {
