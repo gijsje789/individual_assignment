@@ -10,10 +10,9 @@ function sendParametersToArduino(serial)
     pause(1); % delay to ensure that the first message going to the arduino is good.
     
     for i = 1:size(analogueSensors,2)
-        if analogueSensors{i}.OutputVoltage > 0
+        if analogueSensors{i}.a > 0
             % Sensor is properly enabled.
-            message = sprintf('A%d 1 %.10f %.10f %.10f\n', i, ...
-                analogueSensors{i}.OutputVoltage, ...
+            message = sprintf('A%d 1 1 %.10f %.10f\n', i, ...
                 analogueSensors{i}.a, ...
                 analogueSensors{i}.b);
         else
@@ -38,12 +37,25 @@ function sendParametersToArduino(serial)
     
     for i = 1:size(pumps,2)
        if pumps{i}.flowRate > 0
-           message = sprintf('P%d 1 %.3f %s\n', i, pumps{i}.flowRate, pumps{i}.feedbackSensor);
+           message = sprintf('P%d 1 %.10f %s\n', i, pumps{i}.flowRate, pumps{i}.feedbackSensor);
        else
            message = sprintf('P%d 0', i);
        end
        fprintf(serial, message);
        pause(0.1);
+    end
+    
+    for i = 1:4
+        Kp = 0.01;
+        Ki = 0.01;
+        Kd = 1;
+        if pumps{i}.flowRate > 0
+            message = sprintf('C%d 1 %.10f %.10f %.10f\n', i, Kp, Ki, Kd);
+        else
+            message = sprintf('C%d 0', i);
+        end
+        fprintf(serial, message);
+        pause(0.1);
     end
     
     pause(0.1); % Give the arduino enough time to process the input.

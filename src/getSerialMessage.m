@@ -33,18 +33,18 @@ if isempty(dataHandle)
        warning('dataHandle not successfully made.');
    end
 end
-if isempty(fileID)
+if isempty(init)
+   init = true;
+end
+    % Check if the measurment should start.
     if evalin('base', 'exist(''outFile'')')
         fileID = evalin('base', 'outFile');
     else
         fileID = -1;
     end
-end
-if isempty(init)
-   init = true;
-end
-
+    
     string = fscanf(arduinoSerial);
+    disp(string);
     row = row + 1;
     data(row,1) = now; % timestamp the first cell.
     data(row,2) = row; % use the row index for plotting.
@@ -59,7 +59,7 @@ end
             % Immediately write to file (dangerous when message frequency is
             % too high, currently set to 100Hz in arduino.
             % fprintf processing time of 0.0002 seconds = 5000Hz.
-            fprintf(fileID, '%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\r\n', data(row,:));
+            fprintf(fileID, '%.10f,%d,%.10f,%.10f,%.10f,%.10f,%.10f,%.10f,%.10f,%.10f,%.10f,%.10f\r\n', data(row,:));
         end
 
         % Theoretical communication speed: 1000Hz (safety 500Hz).
