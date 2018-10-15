@@ -48,7 +48,7 @@ function sendParametersToArduino(serial)
     for i = 1:4
         Kp = 0.01;
         Ki = 0.01;
-        Kd = 0;
+        Kd = 1;
         if pumps{i}.flowRate > 0
             message = sprintf('C%d 1 %.10f %.10f %.10f\n', i, Kp, Ki, Kd);
         else
