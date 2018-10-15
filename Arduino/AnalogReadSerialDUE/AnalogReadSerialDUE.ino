@@ -493,16 +493,18 @@ void serialEvent()
       {
         if(enabled == '1')
         {
+          float Kp = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+          inputString.remove(0, inputString.indexOf(' ')+1);
           float Ki = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
           inputString.remove(0, inputString.indexOf(' ')+1);
-          float Kp = (inputString.toFloat());
-          Controller[(int)((sensor[1]-'0')-1)].setParameters(10, Ki, Kp, 4095, 0, 4095, SCALING);
-          //Serial.println("Controller: " + String((sensor[1]-'0')-1) + " is set.");
+          float Kd = (inputString.toFloat());
+          Controller[(int)((sensor[1]-'0')-1)].setParameters(10, Kp, Ki, Kd, 4095, 0, 4095, SCALING);
+          // Serial.println("Controller: " + String((sensor[1]-'0')-1) + String(Kp) + " " + String(Ki) + " " + String(Kd) + " is set.");
         }
         else
         {
           // Don't set any parameters.
-          //Serial.println("Controller: " + String((sensor[1]-'0')-1) + " is not set.");
+          // Serial.println("Controller: " + String((sensor[1]-'0')-1) + " is not set.");
         }
         inputString = "";
         stringComplete = false;

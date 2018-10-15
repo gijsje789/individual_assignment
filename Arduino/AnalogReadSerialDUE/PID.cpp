@@ -6,11 +6,12 @@ PID::PID()
   
 }
 
-PID::PID(int T, float Ki, float Kp, float max, float min, float maxSlope, int scale)
+PID::PID(int T, float Kp, float Ki, float Kd, float max, float min, float maxSlope, int scale)
 {
 	_T = T;
-	_Ki = Ki;
 	_Kp = Kp;
+	_Ki = Ki;
+  _Kd = Kd;
 	_max = max;
 	_min = min;
 	_maxSlope = maxSlope;
@@ -23,17 +24,19 @@ PID::~PID()
 {
 }
 
-void PID::setParameters(int T, float Ki, float Kp, float max, float min, float maxSlope, int scale)
+void PID::setParameters(int T, float Kp, float Ki, float Kd, float max, float min, float maxSlope, int scale)
 {
   _T = T;
-  _Ki = Ki;
   _Kp = Kp;
+  _Ki = Ki;
+  _Kd = Kd;
   _max = max;
   _min = min;
   _maxSlope = maxSlope;
   _scale = scale;
   _integral = 0;
   _prevOut = 0;
+  _error_prev = 0;
 }
 
 int PID::getControlSignal(int setPoint, int measured)
@@ -50,8 +53,12 @@ int PID::getControlSignal(int setPoint, int measured)
 	// Calculate the integral term
 	_integral += e * _T;
 	int I = _Ki * _integral;
+
+  // Calculate the differential term
+  int derivative = (e - _error_prev) / _T;
+  int D = _Kd * derivative;
 	
-	int output = P + I;
+	int output = P + I + D;
 	output = ((float)_max/80000.0)*(float)(output);
 	
 	/*Serial.print(" e ");
@@ -63,9 +70,7 @@ int PID::getControlSignal(int setPoint, int measured)
 	Serial.print(" I ");
 	Serial.print(I);
 	Serial.print(" O ");
-	Serial.print(output);
-	Serial.print(' ');
-  Serial.print(output);*/
+	Serial.print(output);*/
 	if(output < _min)
 	{
 		output = _min;
