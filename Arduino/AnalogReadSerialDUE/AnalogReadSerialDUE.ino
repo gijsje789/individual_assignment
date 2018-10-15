@@ -100,13 +100,19 @@ void setup()
   Serial.begin(115200);
   // Set the analog read resolution to 12-bit.
   analogReadResolution(12); // 12-bit resolution for the ADC
-
+  analogWriteResolution(12); // 12-bit PWM resolution.
+  
   // reserve 200 bytes for the inputString.
   inputString.reserve(200);
 
   pinMode(P1_PWM, OUTPUT);
-  analogWriteResolution(12);
   pinMode(P1_INH, OUTPUT);
+  pinMode(P2_PWM, OUTPUT);
+  pinMode(P2_INH, OUTPUT);
+  pinMode(P3_PWM, OUTPUT);
+  pinMode(P3_INH, OUTPUT);
+  pinMode(P4_PWM, OUTPUT);
+  pinMode(P4_INH, OUTPUT);
   
   // Attach the interrupt to the digital pin in order to count the sensor pulses.
   attachInterrupt(digitalPinToInterrupt(D1PIN), D1Read, RISING);
