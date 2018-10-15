@@ -35,7 +35,11 @@
 #define P1_PWM 13
 #define P1_INH 51
 #define P2_PWM 12
-#define P3_INH 49
+#define P2_INH 49
+#define P3_PWM 11
+#define P3_INH 47
+#define P4_PWM 10
+#define P4_INH 45
 
 enum messageStatus 
 {
@@ -87,7 +91,7 @@ int D3_TimerID;
 int D4_TimerID;
 int D5_TimerID;
 
-PID P1_Controller;
+PID Controller[4];
 
 // the setup routine runs once when you press reset:
 void setup() 
@@ -197,7 +201,7 @@ void loop()
       {
         // Flowrate in the pumpParams is the nonscaled version in L/min, calculated sensor value is scaled by SCALING
         digitalWrite(P1_INH, HIGH);
-        int PWM_val = P1_Controller.getControlSignal(SCALING*pumpParams[piFLOWRATE][P1], iSensorOutput[(int)pumpParams[piFEEDBACK][P1]]);
+        int PWM_val = Controller[P1].getControlSignal(SCALING*pumpParams[piFLOWRATE][P1], iSensorOutput[(int)pumpParams[piFEEDBACK][P1]]);
         analogWrite(P1_PWM, PWM_val);
       }
       else
@@ -205,7 +209,47 @@ void loop()
         digitalWrite(P1_INH, LOW); // Put H-bridge to sleep.
         analogWrite(P1_PWM, 0); // Do not send a PWM signal.
       }
-      Serial.print("\r\n");
+
+      if(pumpParams[piFLOWRATE][P2] != -1)
+      {
+        // Flowrate in the pumpParams is the nonscaled version in L/min, calculated sensor value is scaled by SCALING
+        digitalWrite(P2_INH, HIGH);
+        int PWM_val = Controller[P2].getControlSignal(SCALING*pumpParams[piFLOWRATE][P2], iSensorOutput[(int)pumpParams[piFEEDBACK][P2]]);
+        analogWrite(P2_PWM, PWM_val);
+      }
+      else
+      {
+        digitalWrite(P2_INH, LOW); // Put H-bridge to sleep.
+        analogWrite(P2_PWM, 0); // Do not send a PWM signal.
+      }
+
+      if(pumpParams[piFLOWRATE][P3] != -1)
+      {
+        // Flowrate in the pumpParams is the nonscaled version in L/min, calculated sensor value is scaled by SCALING
+        digitalWrite(P3_INH, HIGH);
+        int PWM_val = Controller[P3].getControlSignal(SCALING*pumpParams[piFLOWRATE][P3], iSensorOutput[(int)pumpParams[piFEEDBACK][P3]]);
+        analogWrite(P3_PWM, PWM_val);
+      }
+      else
+      {
+        digitalWrite(P3_INH, LOW); // Put H-bridge to sleep.
+        analogWrite(P3_PWM, 0); // Do not send a PWM signal.
+      }
+
+      if(pumpParams[piFLOWRATE][P4] != -1)
+      {
+        // Flowrate in the pumpParams is the nonscaled version in L/min, calculated sensor value is scaled by SCALING
+        digitalWrite(P4_INH, HIGH);
+        int PWM_val = Controller[P4].getControlSignal(SCALING*pumpParams[piFLOWRATE][P4], iSensorOutput[(int)pumpParams[piFEEDBACK][P4]]);
+        analogWrite(P4_PWM, PWM_val);
+      }
+      else
+      {
+        digitalWrite(P4_INH, LOW); // Put H-bridge to sleep.
+        analogWrite(P4_PWM, 0); // Do not send a PWM signal.
+      }
+      
+      Serial.print("\r\n"); // Placed at the end for debugging purposes.
     } // if Initcomplete
     // Sampling and communication frequency. 100Hz as set by meeting with Marcel and Marije Kamphuis.
   delay(DELAYTIME);
@@ -441,12 +485,22 @@ void serialEvent()
       }
       else if (sensor[0] == 'C')
       {
-        float Ki = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
-        inputString.remove(0, inputString.indexOf(' ')+1);
-        float Kp = (inputString.toFloat());
-        P1_Controller.setParameters(10, Ki, Kp, 4095, 0, 4095, SCALING);
+        if(enabled == '1')
+        {
+          float Ki = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
+          inputString.remove(0, inputString.indexOf(' ')+1);
+          float Kp = (inputString.toFloat());
+          Controller[(int)((sensor[1]-'0')-1)].setParameters(10, Ki, Kp, 4095, 0, 4095, SCALING);
+          //Serial.println("Controller: " + String((sensor[1]-'0')-1) + " is set.");
+        }
+        else
+        {
+          // Don't set any parameters.
+          //Serial.println("Controller: " + String((sensor[1]-'0')-1) + " is not set.");
+        }
         inputString = "";
         stringComplete = false;
+        
       }
       else if (sensor[0] == 'Q')
       {

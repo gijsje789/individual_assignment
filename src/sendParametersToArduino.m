@@ -45,9 +45,17 @@ function sendParametersToArduino(serial)
        pause(0.1);
     end
     
-    message = sprintf('C 1 0.01 0.01\n');
-    fprintf(serial, message);
-    pause(0.1);
+    for i = 1:4
+        Ki = 0.01;
+        Kp = 0.01;
+        if pumps{i}.flowRate > 0
+            message = sprintf('C%d 1 %.10f %.10f\n', i, Ki, Kp);
+        else
+            message = sprintf('C%d 0', i);
+        end
+        fprintf(serial, message);
+        pause(0.1);
+    end
     
     pause(0.1); % Give the arduino enough time to process the input.
     message = sprintf('Q\n');

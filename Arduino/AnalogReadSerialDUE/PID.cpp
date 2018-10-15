@@ -54,18 +54,18 @@ int PID::getControlSignal(int setPoint, int measured)
 	int output = P + I;
 	output = ((float)_max/80000.0)*(float)(output);
 	
-	Serial.print(" e ");
+	/*Serial.print(" e ");
 	Serial.print(e);
 	Serial.print(" P ");
 	Serial.print(P);
-	/*Serial.print(" int ");
+	Serial.print(" int ");
 	Serial.print(_integral);
 	Serial.print(" I ");
 	Serial.print(I);
 	Serial.print(" O ");
-	Serial.print(output); */
+	Serial.print(output);
 	Serial.print(' ');
-  Serial.print(output);
+  Serial.print(output);*/
 	if(output < _min)
 	{
 		output = _min;
