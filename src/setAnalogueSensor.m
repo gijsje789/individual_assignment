@@ -14,17 +14,14 @@ function success = setAnalogueSensor(sensorNumber, output, aVal, bVal, type)
 %   success     True when the sensor information is correct. False when one of
 %   the inputs is wrong.
 persistent Sensors
-persistent Enabled
     success = false;
     if output == -1
         Sensors{sensorNumber}.type = type;
         Sensors{sensorNumber}.OutputVoltage = -1;
         Sensors{sensorNumber}.a = 0;
         Sensors{sensorNumber}.b = 0;
-        Enabled(sensorNumber) = 0;
         success = true;
         assignin('base', 'analogueSensors', Sensors);
-        assignin('base', 'ASEnabled', Enabled);
     elseif output <= 0
         warning('Maximum output of analogue sensor %d is not > 0.', sensorNumber)
     elseif aVal == 0
@@ -36,10 +33,8 @@ persistent Enabled
         Sensors{sensorNumber}.OutputVoltage = output; % Maximum output voltage
         Sensors{sensorNumber}.a = aVal;  % Rico of 'Rico * x + b'
         Sensors{sensorNumber}.b = bVal;  % b of 'Rico * x + b'
-        Enabled(sensorNumber) = 1;
         success = true;
         assignin('base', 'analogueSensors', Sensors);
-        assignin('base', 'ASEnabled', Enabled);
     end
 end
 
