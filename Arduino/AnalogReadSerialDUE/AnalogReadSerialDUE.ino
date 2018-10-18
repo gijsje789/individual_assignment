@@ -40,6 +40,7 @@
 #define P3_INH 47
 #define P4_PWM 10
 #define P4_INH 45
+#define NRPULSES 4
 
 enum messageStatus 
 {
@@ -62,6 +63,7 @@ enum pumpInfo
 
 volatile int D1Value = 0;
 volatile unsigned long timeStamp_D1 = 0;
+volatile int D1Counter = 0;
 volatile int D2Value = 0;
 volatile unsigned long timeStamp_D2 = 0;
 volatile int D3Value = 0;
@@ -268,14 +270,21 @@ void D1Read()
   if (timeStamp_D1 == 0)
   {
     timeStamp_D1 = micros();
+    D1Counter++;
   }
   else
   {
-    unsigned long current = micros();
-    diff = current - timeStamp_D1;
-    float temp = (float)(60000000.0 / (float) (diff));
-    D1Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D1])));
-    timeStamp_D1 = current;
+    D1Counter++;
+    if(D1Counter >= NRPULSES)
+    {
+      unsigned long current = micros();
+      diff = current - timeStamp_D1;
+      diff = diff / D1Counter;
+      float temp = (float)(60000000.0 / (float) (diff));
+      D1Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D1])));
+      timeStamp_D1 = 0;
+      D1Counter = 0;
+    }
   }
 }
 
