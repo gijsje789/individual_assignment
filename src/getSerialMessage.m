@@ -44,7 +44,6 @@ end
     end
     
     string = fscanf(arduinoSerial);
-    disp(string);
     row = row + 1;
     data(row,1) = now; % timestamp the first cell.
     data(row,2) = row; % use the row index for plotting.
