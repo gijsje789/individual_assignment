@@ -42,6 +42,8 @@
 #define P4_INH 45
 #define NRPULSES 4
 
+#define CALIB
+
 enum messageStatus 
 {
   msBUSY = 1,
@@ -72,6 +74,7 @@ volatile int D4Value = 0;
 volatile unsigned long timeStamp_D4 = 0;
 volatile int D5Value = 0;
 volatile unsigned long timeStamp_D5 = 0;
+volatile float PperMin[10] = {};
 
 int A1Value;
 int A2Value;
@@ -85,6 +88,7 @@ bool initComplete = false;
 
 float sensorParams[3][NRSENSORS] = {};
 float pumpParams[2][NRPUMPS] = {};
+
 
 SimpleTimer DS_Timer;
 int D1_TimerID;
@@ -132,7 +136,7 @@ void loop()
   {
       DS_Timer.run();
       
-      float sensorOutput[10] = {0};
+      float sensorOutput[5] = {0};
       int iSensorOutput[10] = {0};
       
       if(sensorParams[siOUTPUT][AN1] != -1)
@@ -142,7 +146,11 @@ void loop()
         iSensorOutput[AN1] = SCALING * (sensorOutput[AN1] - sensorParams[siB][AN1]);
         iSensorOutput[AN1] = iSensorOutput[AN1] / sensorParams[siA][AN1];
       }
+      #ifndef CALIB
       Serial.print(iSensorOutput[AN1]);
+      #else
+      Serial.print(sensorOutput[AN1]*SCALING);
+      #endif
       Serial.print(' ');
 
       if(sensorParams[siOUTPUT][AN2] != -1)
@@ -152,7 +160,11 @@ void loop()
         iSensorOutput[AN2] = SCALING * (sensorOutput[AN2] - sensorParams[siB][AN2]); 
         iSensorOutput[AN2] = iSensorOutput[AN2] / sensorParams[siA][AN2];
       }
+      #ifndef CALIB
       Serial.print(iSensorOutput[AN2]);
+      #else
+      Serial.print(sensorOutput[AN2]*SCALING);
+      #endif
       Serial.print(' ');
 
       if(sensorParams[siOUTPUT][AN3] != -1)
@@ -162,7 +174,11 @@ void loop()
         iSensorOutput[AN3] = SCALING * (sensorOutput[AN3] - sensorParams[siB][AN3]); 
         iSensorOutput[AN3] = iSensorOutput[AN3] / sensorParams[siA][AN3];
       }
+      #ifndef CALIB
       Serial.print(iSensorOutput[AN3]);
+      #else
+      Serial.print(sensorOutput[AN3]*SCALING);
+      #endif
       Serial.print(' ');
 
       if(sensorParams[siOUTPUT][AN4] != -1)
@@ -172,7 +188,11 @@ void loop()
         iSensorOutput[AN4] = SCALING * (sensorOutput[AN4] - sensorParams[siB][AN4]); 
         iSensorOutput[AN4] = iSensorOutput[AN4] / sensorParams[siA][AN4];
       }
+      #ifndef CALIB
       Serial.print(iSensorOutput[AN4]);
+      #else
+      Serial.print(sensorOutput[AN4]*SCALING);
+      #endif
       Serial.print(' ');
 
       if(sensorParams[siOUTPUT][AN5] != -1)
@@ -182,28 +202,52 @@ void loop()
         iSensorOutput[AN5] = SCALING * (sensorOutput[AN5] - sensorParams[siB][AN5]); 
         iSensorOutput[AN5] = iSensorOutput[AN5] / sensorParams[siA][AN5];
       }
+       #ifndef CALIB
       Serial.print(iSensorOutput[AN5]);
+      #else
+      Serial.print(sensorOutput[AN5]*SCALING);
+      #endif
       Serial.print(' ');
 
       iSensorOutput[D1] = D1Value;
+      #ifndef CALIB
       Serial.print(iSensorOutput[D1]);
+      #else
+      Serial.print(PperMin[D1]*SCALING);
+      #endif
       Serial.print(' ');
 
       iSensorOutput[D2] = D2Value;
+      #ifndef CALIB
       Serial.print(iSensorOutput[D2]);
+      #else
+      Serial.print(PperMin[D2]*SCALING);
+      #endif
       Serial.print(' ');
 
       iSensorOutput[D3] = D3Value;
+      #ifndef CALIB
       Serial.print(iSensorOutput[D3]);
+      #else
+      Serial.print(PperMin[D3]*SCALING);
+      #endif
       Serial.print(' ');
 
       iSensorOutput[D4] = D4Value;
+      #ifndef CALIB
       Serial.print(iSensorOutput[D4]);
+      #else
+      Serial.print(PperMin[D4]*SCALING);
+      #endif
       Serial.print(' ');
 
       iSensorOutput[D5] = D5Value;
+      #ifndef CALIB
       Serial.print(iSensorOutput[D5]);
-      
+      #else
+      Serial.print(PperMin[D5]*SCALING);
+      #endif
+      // No space here for debuging purpose of controllers.
 
       if(pumpParams[piFLOWRATE][P1] != -1)
       {
@@ -280,8 +324,8 @@ void D1Read()
       unsigned long current = micros();
       diff = current - timeStamp_D1;
       diff = diff / D1Counter;
-      float temp = (float)(60000000.0 / (float) (diff));
-      D1Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D1])));
+      PperMin[D1] = (float)(60000000.0 / (float) (diff));
+      D1Value = (int) ((float)SCALING * (PperMin[D1] / (float)(sensorParams[siOUTPUT][D1])));
       timeStamp_D1 = 0;
       D1Counter = 0;
     }
@@ -305,8 +349,8 @@ void D2Read()
   {
     unsigned long current = micros();
     diff = current - timeStamp_D2;
-    float temp = (float)(60000000.0 / (float) (diff));
-    D2Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D2])));
+    PperMin[D2] = (float)(60000000.0 / (float) (diff));
+    D2Value = (int) ((float)SCALING * (PperMin[D2] / (float)(sensorParams[siOUTPUT][D2])));
     timeStamp_D2 = current;
   }
 }
@@ -328,8 +372,8 @@ void D3Read()
   {
     unsigned long current = micros();
     diff = current - timeStamp_D3;
-    float temp = (float)(60000000.0 / (float) (diff));
-    D3Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D3])));
+    PperMin[D3] = (float)(60000000.0 / (float) (diff));
+    D3Value = (int) ((float)SCALING * (PperMin[D3] / (float)(sensorParams[siOUTPUT][D3])));
     timeStamp_D3 = current;
   }
 }
@@ -352,8 +396,8 @@ void D4Read()
   {
     unsigned long current = micros();
     diff = current - timeStamp_D4;
-    float temp = (float)(60000000.0 / (float) (diff));
-    D4Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D4])));
+    PperMin[D4] = (float)(60000000.0 / (float) (diff));
+    D4Value = (int) ((float)SCALING * (PperMin[D4] / (float)(sensorParams[siOUTPUT][D4])));
     timeStamp_D4 = current;
   }
 }
@@ -376,8 +420,8 @@ void D5Read()
   {
     unsigned long current = micros();
     diff = current - timeStamp_D5;
-    float temp = (float)(60000000.0 / (float) (diff));
-    D5Value = (int) ((float)SCALING * (temp / (float)(sensorParams[siOUTPUT][D5])));
+    PperMin[D5] = (float)(60000000.0 / (float) (diff));
+    D5Value = (int) ((float)SCALING * (PperMin[D5] / (float)(sensorParams[siOUTPUT][D5])));
     timeStamp_D5 = current;
   }
 }
