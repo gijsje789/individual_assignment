@@ -46,10 +46,12 @@ function sendParametersToArduino(serial)
     end
     
     for i = 1:4
-        Kp = 0.01;
-        Ki = 0.01;
-        Kd = 1;
         if pumps{i}.flowRate > 0
+            if pumps{i}.flowRate > 1.5
+                Kp = 0.01; Ki = 0.0025; Kd = 1; % Low-pass, high flow controller
+            else
+                Kp = 0.01; Ki = 0.00125; Kd = 0; % Low-pass, low flow controller
+            end
             message = sprintf('C%d 1 %.10f %.10f %.10f\n', i, Kp, Ki, Kd);
         else
             message = sprintf('C%d 0', i);

@@ -42,7 +42,7 @@
 #define P4_INH 45
 #define NRPULSES 4
 
-#define CALIB
+//#define CALIB // Comment this line for normal set-up functionality.
 
 enum messageStatus 
 {
