@@ -68,12 +68,16 @@ volatile unsigned long timeStamp_D1 = 0;
 volatile int D1Counter = 0;
 volatile int D2Value = 0;
 volatile unsigned long timeStamp_D2 = 0;
+volatile int D2Counter = 0;
 volatile int D3Value = 0;
 volatile unsigned long timeStamp_D3 = 0;
+volatile int D3Counter = 0;
 volatile int D4Value = 0;
 volatile unsigned long timeStamp_D4 = 0;
+volatile int D4Counter = 0;
 volatile int D5Value = 0;
 volatile unsigned long timeStamp_D5 = 0;
+volatile int D5Counter = 0;
 volatile float PperMin[10] = {};
 
 int A1Value;
@@ -344,14 +348,21 @@ void D2Read()
   if (timeStamp_D2 == 0)
   {
     timeStamp_D2 = micros();
+    D2Counter++;
   }
   else
   {
-    unsigned long current = micros();
-    diff = current - timeStamp_D2;
-    PperMin[D2] = (float)(60000000.0 / (float) (diff));
-    D2Value = (int) ((float)SCALING * (PperMin[D2] / (float)(sensorParams[siOUTPUT][D2])));
-    timeStamp_D2 = current;
+    D2Counter++;
+    if(D2Counter >= NRPULSES)
+    {
+      unsigned long current = micros();
+      diff = current - timeStamp_D2;
+      diff = diff / D2Counter;
+      PperMin[D2] = (float)(60000000.0 / (float) (diff));
+      D2Value = (int) ((float)SCALING * (PperMin[D2] / (float)(sensorParams[siOUTPUT][D2])));
+      timeStamp_D2 = 0;
+      D2Counter = 0;
+    }
   }
 }
 
@@ -367,14 +378,21 @@ void D3Read()
   if (timeStamp_D3 == 0)
   {
     timeStamp_D3 = micros();
+    D3Counter++;
   }
   else
   {
-    unsigned long current = micros();
-    diff = current - timeStamp_D3;
-    PperMin[D3] = (float)(60000000.0 / (float) (diff));
-    D3Value = (int) ((float)SCALING * (PperMin[D3] / (float)(sensorParams[siOUTPUT][D3])));
-    timeStamp_D3 = current;
+    D3Counter++;
+    if(D3Counter >= NRPULSES)
+    {
+      unsigned long current = micros();
+      diff = current - timeStamp_D3;
+      diff = diff / D3Counter;
+      PperMin[D3] = (float)(60000000.0 / (float) (diff));
+      D3Value = (int) ((float)SCALING * (PperMin[D3] / (float)(sensorParams[siOUTPUT][D3])));
+      timeStamp_D3 = 0;
+      D3Counter = 0;
+    }
   }
 }
 
@@ -391,14 +409,21 @@ void D4Read()
   if (timeStamp_D4 == 0)
   {
     timeStamp_D4 = micros();
+    D4Counter++;
   }
   else
   {
-    unsigned long current = micros();
-    diff = current - timeStamp_D4;
-    PperMin[D4] = (float)(60000000.0 / (float) (diff));
-    D4Value = (int) ((float)SCALING * (PperMin[D4] / (float)(sensorParams[siOUTPUT][D4])));
-    timeStamp_D4 = current;
+    D4Counter++;
+    if(D4Counter >= NRPULSES)
+    {
+      unsigned long current = micros();
+      diff = current - timeStamp_D4;
+      diff = diff / D4Counter;
+      PperMin[D4] = (float)(60000000.0 / (float) (diff));
+      D4Value = (int) ((float)SCALING * (PperMin[D4] / (float)(sensorParams[siOUTPUT][D4])));
+      timeStamp_D4 = 0;
+      D4Counter = 0;
+    }
   }
 }
 
@@ -415,14 +440,21 @@ void D5Read()
   if (timeStamp_D5 == 0)
   {
     timeStamp_D5 = micros();
+    D5Counter++;
   }
   else
   {
-    unsigned long current = micros();
-    diff = current - timeStamp_D5;
-    PperMin[D5] = (float)(60000000.0 / (float) (diff));
-    D5Value = (int) ((float)SCALING * (PperMin[D5] / (float)(sensorParams[siOUTPUT][D5])));
-    timeStamp_D5 = current;
+    D5Counter++;
+    if(D5Counter >= NRPULSES)
+    {
+      unsigned long current = micros();
+      diff = current - timeStamp_D5;
+      diff = diff / D5Counter;
+      PperMin[D5] = (float)(60000000.0 / (float) (diff));
+      D5Value = (int) ((float)SCALING * (PperMin[D5] / (float)(sensorParams[siOUTPUT][D5])));
+      timeStamp_D5 = 0;
+      D5Counter = 0;
+    }
   }
 }
 
