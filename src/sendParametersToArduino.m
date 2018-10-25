@@ -60,6 +60,15 @@ function sendParametersToArduino(serial)
         pause(0.1);
     end
     
+    calib = evalin('base', 'calib');
+    if calib
+        message = sprintf('K 1');
+    else
+        message = sprintf('K 0');
+    end
+    fprintf(serial, message);
+    pause(0.1);
+    
     pause(0.1); % Give the arduino enough time to process the input.
     message = sprintf('Q\n');
     fprintf(serial, message); % Send the "I'm finished sending' signal.
