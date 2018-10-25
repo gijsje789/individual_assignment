@@ -12,7 +12,7 @@ function sendParametersToArduino(serial)
     for i = 1:size(analogueSensors,2)
         if analogueSensors{i}.a > 0
             % Sensor is properly enabled.
-            message = sprintf('A%d 1 1 %.10f %.10f\n', i, ...
+            message = sprintf('A%d 1 %.10f %.10f\n', i, ...
                 analogueSensors{i}.a, ...
                 analogueSensors{i}.b);
         else
@@ -46,10 +46,12 @@ function sendParametersToArduino(serial)
     end
     
     for i = 1:4
-        Kp = 0.01;
-        Ki = 0.01;
-        Kd = 1;
         if pumps{i}.flowRate > 0
+            if pumps{i}.flowRate > 1.5
+                Kp = 0.01; Ki = 0.0025; Kd = 1; % Low-pass, high flow controller
+            else
+                Kp = 0.01; Ki = 0.00125; Kd = 0; % Low-pass, low flow controller
+            end
             message = sprintf('C%d 1 %.10f %.10f %.10f\n', i, Kp, Ki, Kd);
         else
             message = sprintf('C%d 0', i);
@@ -57,6 +59,15 @@ function sendParametersToArduino(serial)
         fprintf(serial, message);
         pause(0.1);
     end
+    
+    calib = evalin('base', 'calib');
+    if calib
+        message = sprintf('K 1');
+    else
+        message = sprintf('K 0');
+    end
+    fprintf(serial, message);
+    pause(0.1);
     
     pause(0.1); % Give the arduino enough time to process the input.
     message = sprintf('Q\n');
