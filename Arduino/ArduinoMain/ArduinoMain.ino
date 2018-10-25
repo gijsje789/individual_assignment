@@ -42,8 +42,6 @@
 #define P4_INH 45
 #define NRPULSES 4
 
-//#define CALIB // Comment this line for normal set-up functionality.
-
 enum messageStatus 
 {
   msBUSY = 1,
@@ -90,8 +88,8 @@ String inputString = "";
 bool stringComplete = false;
 bool initComplete = false;
 
-float sensorParams[3][NRSENSORS] = {};
-float pumpParams[2][NRPUMPS] = {};
+float sensorParams[3][NRSENSORS] = {-1};
+float pumpParams[2][NRPUMPS] = {-1};
 
 
 SimpleTimer DS_Timer;
@@ -102,6 +100,7 @@ int D4_TimerID;
 int D5_TimerID;
 
 PID Controller[4];
+bool SensorCalibration = false;
 
 // the setup routine runs once when you press reset:
 void setup() 
@@ -143,114 +142,105 @@ void loop()
       float sensorOutput[5] = {0};
       int iSensorOutput[10] = {0};
       
-      if(sensorParams[siOUTPUT][AN1] != -1)
+      if(sensorParams[siA][AN1] != -1)
       {
         A1Value = analogRead(AN1PIN);
         sensorOutput[AN1] = ( ( (float)(A1Value) ) * MAXANALOGVOLTAGE ) / BIT12ADC;
         iSensorOutput[AN1] = SCALING * (sensorOutput[AN1] - sensorParams[siB][AN1]);
         iSensorOutput[AN1] = iSensorOutput[AN1] / sensorParams[siA][AN1];
       }
-      #ifndef CALIB
-      Serial.print(iSensorOutput[AN1]);
-      #else
-      Serial.print(sensorOutput[AN1]*SCALING);
-      #endif
+      if (SensorCalibration)
+        Serial.print(sensorOutput[AN1]*SCALING);
+      else
+        Serial.print(iSensorOutput[AN1]);
       Serial.print(' ');
 
-      if(sensorParams[siOUTPUT][AN2] != -1)
+      if(sensorParams[siA][AN2] != -1)
       {
         A2Value = analogRead(AN2PIN);
         sensorOutput[AN2] = ( ( (float)(A2Value) ) * MAXANALOGVOLTAGE ) / BIT12ADC;
         iSensorOutput[AN2] = SCALING * (sensorOutput[AN2] - sensorParams[siB][AN2]); 
         iSensorOutput[AN2] = iSensorOutput[AN2] / sensorParams[siA][AN2];
       }
-      #ifndef CALIB
-      Serial.print(iSensorOutput[AN2]);
-      #else
-      Serial.print(sensorOutput[AN2]*SCALING);
-      #endif
+      if (SensorCalibration)
+        Serial.print(sensorOutput[AN2]*SCALING);
+      else
+        Serial.print(iSensorOutput[AN2]);
       Serial.print(' ');
 
-      if(sensorParams[siOUTPUT][AN3] != -1)
+      if(sensorParams[siA][AN3] != -1)
       {
         A3Value = analogRead(AN3PIN);
         sensorOutput[AN3] = ( ( (float)(A3Value) ) * MAXANALOGVOLTAGE ) / BIT12ADC;
         iSensorOutput[AN3] = SCALING * (sensorOutput[AN3] - sensorParams[siB][AN3]); 
         iSensorOutput[AN3] = iSensorOutput[AN3] / sensorParams[siA][AN3];
       }
-      #ifndef CALIB
-      Serial.print(iSensorOutput[AN3]);
-      #else
-      Serial.print(sensorOutput[AN3]*SCALING);
-      #endif
+      if (SensorCalibration)
+        Serial.print(sensorOutput[AN3]*SCALING);
+      else
+        Serial.print(iSensorOutput[AN3]);
       Serial.print(' ');
 
-      if(sensorParams[siOUTPUT][AN4] != -1)
+      if(sensorParams[siA][AN4] != -1)
       {
         A4Value = analogRead(AN4PIN);
         sensorOutput[AN4] = ( ( (float)(A4Value) ) * MAXANALOGVOLTAGE ) / BIT12ADC;
         iSensorOutput[AN4] = SCALING * (sensorOutput[AN4] - sensorParams[siB][AN4]); 
         iSensorOutput[AN4] = iSensorOutput[AN4] / sensorParams[siA][AN4];
       }
-      #ifndef CALIB
-      Serial.print(iSensorOutput[AN4]);
-      #else
-      Serial.print(sensorOutput[AN4]*SCALING);
-      #endif
+      if (SensorCalibration)
+        Serial.print(sensorOutput[AN4]*SCALING);
+      else
+        Serial.print(iSensorOutput[AN4]);
       Serial.print(' ');
 
-      if(sensorParams[siOUTPUT][AN5] != -1)
+      if(sensorParams[siA][AN5] != -1)
       {
         A5Value = analogRead(AN5PIN);
         sensorOutput[AN5] = ( ( (float)(A5Value) ) * MAXANALOGVOLTAGE ) / BIT12ADC;
         iSensorOutput[AN5] = SCALING * (sensorOutput[AN5] - sensorParams[siB][AN5]); 
         iSensorOutput[AN5] = iSensorOutput[AN5] / sensorParams[siA][AN5];
       }
-       #ifndef CALIB
-      Serial.print(iSensorOutput[AN5]);
-      #else
-      Serial.print(sensorOutput[AN5]*SCALING);
-      #endif
+       if (SensorCalibration)
+        Serial.print(sensorOutput[AN5]*SCALING);
+      else
+        Serial.print(iSensorOutput[AN5]);
       Serial.print(' ');
 
       iSensorOutput[D1] = D1Value;
-      #ifndef CALIB
-      Serial.print(iSensorOutput[D1]);
-      #else
-      Serial.print(PperMin[D1]*SCALING);
-      #endif
+      if (SensorCalibration)
+        Serial.print(PperMin[D1]*SCALING);
+      else
+        Serial.print(iSensorOutput[D1]);
       Serial.print(' ');
 
       iSensorOutput[D2] = D2Value;
-      #ifndef CALIB
-      Serial.print(iSensorOutput[D2]);
-      #else
-      Serial.print(PperMin[D2]*SCALING);
-      #endif
+      if (SensorCalibration)
+        Serial.print(PperMin[D2]*SCALING);
+      else
+        Serial.print(iSensorOutput[D2]);
       Serial.print(' ');
 
       iSensorOutput[D3] = D3Value;
-      #ifndef CALIB
-      Serial.print(iSensorOutput[D3]);
-      #else
-      Serial.print(PperMin[D3]*SCALING);
-      #endif
+      if (SensorCalibration)
+        Serial.print(PperMin[D3]*SCALING);
+      else
+        Serial.print(iSensorOutput[D3]);
       Serial.print(' ');
 
       iSensorOutput[D4] = D4Value;
-      #ifndef CALIB
-      Serial.print(iSensorOutput[D4]);
-      #else
-      Serial.print(PperMin[D4]*SCALING);
-      #endif
+      if (SensorCalibration)
+        Serial.print(PperMin[D4]*SCALING);
+      else
+        Serial.print(iSensorOutput[D4]);
       Serial.print(' ');
 
       iSensorOutput[D5] = D5Value;
-      #ifndef CALIB
-      Serial.print(iSensorOutput[D5]);
-      #else
-      Serial.print(PperMin[D5]*SCALING);
-      #endif
+      if (SensorCalibration)
+        Serial.print(PperMin[D5]*SCALING);
+      else
+        Serial.print(iSensorOutput[D5]);
+      Serial.print(' ');
       // No space here for debuging purpose of controllers.
 
       if(pumpParams[piFLOWRATE][P1] != -1)
@@ -506,8 +496,6 @@ void serialEvent()
         if(enabled == '1')
         {
           // If an analog sensor is enabled, 3 values are send.
-          sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
-          inputString.remove(0, inputString.indexOf(' ')+1);
           sensorParams[siA][(int)((sensor[1]-'0')-1)] = (inputString.substring(0, inputString.indexOf(' '))).toFloat();
           inputString.remove(0, inputString.indexOf(' ')+1);
           //Serial.println(inputString);
@@ -517,12 +505,9 @@ void serialEvent()
         else
         {
           // If the sensor is disabled, it doesn't matter what values are sent; they are ignored. 
-          sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1)] = -1;
           sensorParams[siA][(int)((sensor[1]-'0')-1)] = -1;
           sensorParams[siB][(int)((sensor[1]-'0')-1)] = -1;
         }
-        inputString = "";
-        stringComplete = false;
         /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1)]) 
                 + ", aVal: " + String(sensorParams[siA][(int)((sensor[1]-'0')-1)]) + ", bVal: " + String(sensorParams[siB][(int)((sensor[1]-'0')-1)]));*/
       }
@@ -543,8 +528,6 @@ void serialEvent()
           sensorParams[siA][(int)((sensor[1]-'0')-1+5)] = -1;
           sensorParams[siB][(int)((sensor[1]-'0')-1+5)] = -1;
         }
-        inputString = "";
-        stringComplete = false;
         /*Serial.println("Sensor: " + sensor + ", is " + String(enabled) + ", val: " + String(sensorParams[siOUTPUT][(int)((sensor[1]-'0')-1+5)]) 
                 + ", aVal: " + String(sensorParams[siA][(int)((sensor[1]-'0')-1+5)]) + ", bVal: " + String(sensorParams[siB][(int)((sensor[1]-'0')-1+5)]));*/
         // Serial.println("testing: " +  String(sensorParams[siOUTPUT][D1]) + " " + String(sensorParams[siOUTPUT][D2]) + " " + String(sensorParams[siOUTPUT][D3]) + " " + String(sensorParams[siOUTPUT][D4]) + " " + String(sensorParams[siOUTPUT][D5]));
@@ -570,8 +553,6 @@ void serialEvent()
           pumpParams[piFLOWRATE][(int)((sensor[1]-'0')-1)] = -1;
           pumpParams[piFEEDBACK][(int)((sensor[1]-'0')-1)] = -1;
         }
-        inputString = "";
-        stringComplete = false;
         // Serial.println("Pump: " + sensor + " is " + String(enabled) + ", val: " + String(pumpParams[piFLOWRATE][(int)((sensor[1]-'0')-1)]) + ", with feedback: " + String(pumpParams[piFEEDBACK][(int)((sensor[1]-'0')-1)]));
       }
       else if (sensor[0] == 'C')
@@ -591,9 +572,6 @@ void serialEvent()
           // Don't set any parameters.
           // Serial.println("Controller: " + String((sensor[1]-'0')-1) + " is not set.");
         }
-        inputString = "";
-        stringComplete = false;
-        
       }
       else if (sensor[0] == 'Q')
       {
@@ -629,13 +607,20 @@ void serialEvent()
         delay(1000);
         rstc_start_software_reset(RSTC);
       }
+      else if (sensor[0] == 'K')
+      {
+        if (enabled == '1')
+          SensorCalibration = true;
+        else
+          SensorCalibration = false;
+      }
       else
       {
         // If the data starts weird, information is ignored.
         //Serial.println("Error: something went wrong." + sensor + " " + enabled);
-        inputString = "";
-        stringComplete = false;
       }
+      inputString = "";
+      stringComplete = false;
   } // if
 } // serialEvent()
 

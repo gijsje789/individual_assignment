@@ -63,14 +63,14 @@ int PID::getControlSignal(int setPoint, int measured)
 	
 	/*Serial.print(" e ");
 	Serial.print(e);*/
-	Serial.print(" P ");
+	/*Serial.print(" P ");
 	Serial.print(P);
 	Serial.print(" I ");
 	Serial.print(I);
   Serial.print(" D ");
   Serial.print(D);
 	Serial.print(" O ");
-	Serial.print(output);
+	Serial.print(output);*/
 	if(output < _min)
 	{
 		output = _min;
@@ -86,8 +86,8 @@ int PID::getControlSignal(int setPoint, int measured)
 	{
 		output = _maxSlope;
 	}
-	Serial.print(' ');
-  Serial.print(output);
+	/*Serial.print(' ');
+  Serial.print(output);*/
 	_prevOut = output;
 	return output;
 }
