@@ -12,7 +12,7 @@ function success = setSerialPort(port)
 %   success     Returns true when the COM port is valid and set to the base
 %   workspace. Otherwise, false.
     success = true;
-    if ~isemtpy(strfind(port, 'COM'))
+    if ~isempty(strfind(port, 'COM')) % contains(port, 'COM')
         [num, status] = str2num(erase(port,'COM'));
         if status
             assignin('base', 'serialPort', port);
