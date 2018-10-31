@@ -124,8 +124,8 @@ void setup()
   pinMode(P4_INH, OUTPUT);
   
   // Attach the interrupt to the digital pin in order to count the sensor pulses.
-  attachInterrupt(digitalPinToInterrupt(D1PIN), D1Read, RISING);
-  attachInterrupt(digitalPinToInterrupt(D2PIN), D2Read, RISING);
+  attachInterrupt(digitalPinToInterrupt(D1PIN), D1Read, FALLING);
+  attachInterrupt(digitalPinToInterrupt(D2PIN), D2Read, FALLING);
   /******* Uncomment and enter correct pin ******/
   // attachInterrupt(digitalPinToInterrupt(D3PIN), D3Read, RISING);
   // attachInterrupt(digitalPinToInterrupt(D4PIN), D4Read, RISING);
@@ -317,7 +317,7 @@ void D1Read()
     {
       unsigned long current = micros();
       diff = current - timeStamp_D1;
-      diff = diff / D1Counter;
+      diff = diff / (D1Counter-1);
       PperMin[D1] = (float)(60000000.0 / (float) (diff));
       D1Value = (int) ((float)SCALING * (PperMin[D1] / (float)(sensorParams[siOUTPUT][D1])));
       timeStamp_D1 = 0;
@@ -347,7 +347,7 @@ void D2Read()
     {
       unsigned long current = micros();
       diff = current - timeStamp_D2;
-      diff = diff / D2Counter;
+      diff = diff / (D2Counter-1);
       PperMin[D2] = (float)(60000000.0 / (float) (diff));
       D2Value = (int) ((float)SCALING * (PperMin[D2] / (float)(sensorParams[siOUTPUT][D2])));
       timeStamp_D2 = 0;
@@ -377,7 +377,7 @@ void D3Read()
     {
       unsigned long current = micros();
       diff = current - timeStamp_D3;
-      diff = diff / D3Counter;
+      diff = diff / (D3Counter-1);
       PperMin[D3] = (float)(60000000.0 / (float) (diff));
       D3Value = (int) ((float)SCALING * (PperMin[D3] / (float)(sensorParams[siOUTPUT][D3])));
       timeStamp_D3 = 0;
@@ -408,7 +408,7 @@ void D4Read()
     {
       unsigned long current = micros();
       diff = current - timeStamp_D4;
-      diff = diff / D4Counter;
+      diff = diff / (D4Counter-1);
       PperMin[D4] = (float)(60000000.0 / (float) (diff));
       D4Value = (int) ((float)SCALING * (PperMin[D4] / (float)(sensorParams[siOUTPUT][D4])));
       timeStamp_D4 = 0;
@@ -439,7 +439,7 @@ void D5Read()
     {
       unsigned long current = micros();
       diff = current - timeStamp_D5;
-      diff = diff / D5Counter;
+      diff = diff / (D5Counter-1);
       PperMin[D5] = (float)(60000000.0 / (float) (diff));
       D5Value = (int) ((float)SCALING * (PperMin[D5] / (float)(sensorParams[siOUTPUT][D5])));
       timeStamp_D5 = 0;
