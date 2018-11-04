@@ -11,10 +11,19 @@ function livePlot(obj, event, app)
     %% Initialisation
     if isempty(sensorData)
        sensorData = evalin('base', 'sensorData');
+       if app.PressureAutoscaleYSwitch.Value == 'yes'
+           app.pressureGraph.YLimMode = 'auto';
+       else
+           app.pressureGraph.YLimMode = 'manual';
+       end
+       if app.FlowAutoscaleYSwitch.Value == 'yes'
+           app.flowGraph.YLimMode = 'auto';
+       else
+           app.flowGraph.YLimMode = 'manual';
+       end
        app.flowGraph.XLimMode = 'manual';
-       app.flowGraph.YLimMode = 'auto';
        app.pressureGraph.XLimMode = 'manual';
-       app.pressureGraph.YLimMode = 'auto';
+       
 %        app.flowGraph.YLim = [0, 4150];
     end
     if isempty(sensors)
