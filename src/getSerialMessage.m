@@ -51,9 +51,19 @@ end
     if row > 10
         % evaluate the string as three seperate numerical values seperated by a space.
         % Processing time of 0.0004 seconds = 2500Hz.
-        data(row, 3:12) = sscanf(string, '%f', [1 10]);
-        data(row,3:12) = data(row,3:12)/SCALING;
-        dataHandle.data(row, :) = data(row, :);
+        success = true;
+        try
+            data(row, 3:12) = sscanf(string, '%f', [1 10]);
+        catch
+            warning('Serial message error.');
+            data(row,3:12) = 0;
+            success = false;
+        end
+        
+        if success
+            data(row,3:12) = data(row,3:12)/SCALING;
+            dataHandle.data(row, :) = data(row, :);
+        end
 
         if fileID ~= -1
             % Immediately write to file (dangerous when message frequency is
